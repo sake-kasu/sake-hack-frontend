@@ -22,9 +22,13 @@ const menuItems: NavigationMenuItem[] = [
 
 type NavigationMenuProps = {
   onItemClick?: () => void;
+  mini?: boolean;
 };
 
-export const NavigationMenu = ({ onItemClick }: NavigationMenuProps) => {
+export const NavigationMenu = ({
+  onItemClick,
+  mini = false,
+}: NavigationMenuProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
@@ -49,9 +53,27 @@ export const NavigationMenu = ({ onItemClick }: NavigationMenuProps) => {
                 onClick={() => {
                   handleNavigate(item.path);
                 }}
+                sx={{
+                  minHeight: 48,
+                  justifyContent: mini ? "center" : "initial",
+                  px: 2.5,
+                }}
               >
-                <ListItemIcon>{item.icon}</ListItemIcon>
-                <ListItemText primary={t(item.labelKey)} />
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: mini ? 0 : 3,
+                    justifyContent: "center",
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                {!mini && (
+                  <ListItemText
+                    primary={t(item.labelKey)}
+                    primaryTypographyProps={{ noWrap: true }}
+                  />
+                )}
               </ListItemButton>
             </ListItem>
           );
