@@ -1,12 +1,12 @@
 import { createBrowserRouter, type RouteObject } from "react-router-dom";
-import { RootLayout } from "@/components/layouts/RootLayout";
+import { AppLayout } from "@/components/layouts/AppLayout";
 import { Home } from "@/pages/Home";
 import { NotFound } from "@/pages/NotFound";
 
 const routes: RouteObject[] = [
   {
     path: "/",
-    element: <RootLayout />,
+    element: <AppLayout />,
     children: [
       {
         index: true,
