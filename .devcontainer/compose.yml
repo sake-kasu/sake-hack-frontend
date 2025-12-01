@@ -1,0 +1,21 @@
+services:
+  sake-hack-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sake-hack-frontend
+    volumes:
+      - type: bind
+        source: ../
+        target: /workspace
+      - type: bind
+        source: ${DOCKER_SOCK:-/var/run/docker.sock}
+        target: /var/run/docker.sock
+    working_dir: /workspace
+    command: sleep infinity
+    networks:
+      sake_hack_network:
+
+networks:
+  sake_hack_network:
+    external: true

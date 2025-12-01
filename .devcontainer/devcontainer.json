@@ -1,0 +1,27 @@
+{
+  "name": "sake-hack-frontend",
+  "dockerComposeFile": "./compose.yml",
+  "service": "sake-hack-frontend",
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "biomejs.biome",
+        "lokalise.i18n-ally",
+        "eamodio.gitlens",
+        "mhutchie.git-graph",
+        "usernamehw.errorlens",
+        "shardulm94.trailing-spaces",
+        "anthropic.claude-code",
+        "saoudrizwan.claude-dev"
+      ]
+    },
+    "settings": {
+      "terminal.integrated.defaultProfile.linux": "zsh"
+    }
+  },
+  "postCreateCommand": "chmod +x /workspace/.devcontainer/setup.sh && /workspace/.devcontainer/setup.sh",
+  "remoteUser": "node"
+}
