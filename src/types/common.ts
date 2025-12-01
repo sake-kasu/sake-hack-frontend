@@ -28,3 +28,10 @@ export type SortParams = {
   sortBy: string;
   order: SortOrder;
 };
+
+export type NavigationMenuItem = {
+  label: string;
+  labelKey: string;
+  icon: React.ReactNode;
+  path: string;
+};
