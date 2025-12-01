@@ -11,14 +11,26 @@
     "format": "biome format --write ./src"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@hookform/resolvers": "^5.2.2",
+    "@mui/icons-material": "^7.3.5",
+    "@mui/material": "^7.3.5",
+    "axios": "^1.13.2",
+    "i18next": "^25.6.3",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "react-hook-form": "^7.67.0",
+    "react-i18next": "^16.3.5",
+    "react-router-dom": "^7.9.6",
+    "yup": "^1.7.1"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
+    "orval": "^7.17.0",
     "typescript": "~5.9.3",
     "vite": "^7.2.4"
   }
