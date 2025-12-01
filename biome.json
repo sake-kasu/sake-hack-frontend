@@ -1,8 +1,14 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.8/schema.json",
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["**/dist", "**/node_modules", "**/.build", "**/storybook-static"]
+    "includes": [
+      "**",
+      "!**/dist",
+      "!**/node_modules",
+      "!**/.build",
+      "!**/storybook-static"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -31,10 +37,9 @@
       "complexity": {
         "noBannedTypes": "error",
         "noExtraBooleanCast": "error",
-        "noMultipleSpacesInRegularExpressionLiterals": "error",
         "noUselessCatch": "error",
         "noUselessTypeConstraint": "error",
-        "noWith": "error"
+        "noAdjacentSpacesInRegex": "error"
       },
       "correctness": {
         "noConstAssign": "error",
@@ -44,7 +49,6 @@
         "noGlobalObjectCalls": "error",
         "noInnerDeclarations": "error",
         "noInvalidConstructorSuper": "error",
-        "noNewSymbol": "error",
         "noNonoctalDecimalEscape": "error",
         "noPrecisionLoss": "error",
         "noSelfAssign": "error",
@@ -58,25 +62,26 @@
         "noUnusedImports": "error",
         "noUnusedLabels": "error",
         "noUnusedVariables": "error",
-        "useArrayLiterals": "off",
         "useExhaustiveDependencies": "warn",
         "useHookAtTopLevel": "error",
         "useIsNan": "error",
         "useValidForDirection": "error",
-        "useYield": "error"
+        "useYield": "error",
+        "noInvalidBuiltinInstantiation": "error",
+        "useValidTypeof": "error"
       },
       "style": {
         "noNamespace": "error",
         "useAsConstAssertion": "error",
         "useBlockStatements": "off",
-        "useSelfClosingElements": "error"
+        "useSelfClosingElements": "error",
+        "useArrayLiterals": "off"
       },
       "suspicious": {
         "noAsyncPromiseExecutor": "error",
         "noCatchAssign": "error",
         "noClassAssign": "error",
         "noCompareNegZero": "error",
-        "noConsoleLog": "error",
         "noControlCharactersInRegex": "error",
         "noDebugger": "error",
         "noDuplicateCase": "error",
@@ -98,28 +103,11 @@
         "noUnsafeDeclarationMerging": "error",
         "noUnsafeNegation": "error",
         "useGetterReturn": "error",
-        "useValidTypeof": "error"
+        "noWith": "error",
+        "noConsole": { "level": "error", "options": { "allow": ["log"] } }
       },
-      "nursery": {
-        "useImportRestrictions": {
-          "level": "error",
-          "options": {
-            "pathAllowList": ["@/*"]
-          }
-        }
-      }
+      "nursery": {}
     }
   },
-  "overrides": [
-    {
-      "include": [".storybook/preview.tsx"],
-      "linter": {
-        "rules": {
-          "nursery": {
-            "useImportRestrictions": "off"
-          }
-        }
-      }
-    }
-  ]
+  "overrides": []
 }
