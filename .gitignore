@@ -18,8 +18,7 @@ dist-ssr
 .env.production.local
 .env.development.local
 
-# API generated files
-src/lib/api/generated.ts
+# API specification directory
 external/
 
 # Editor directories and files

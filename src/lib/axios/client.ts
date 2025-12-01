@@ -72,3 +72,10 @@ export const createAxiosClient = (): AxiosInstance => {
 };
 
 export const apiClient = createAxiosClient();
+
+// Orval用のカスタムインスタンス関数
+export const customInstance = <T>(
+  config: Parameters<typeof apiClient>[0],
+): Promise<T> => {
+  return apiClient(config).then(({ data }) => data);
+};

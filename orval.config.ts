@@ -10,7 +10,7 @@ export default defineConfig({
       override: {
         mutator: {
           path: "./src/lib/axios/client.ts",
-          name: "apiClient",
+          name: "customInstance",
         },
       },
     },
