@@ -6,9 +6,9 @@ import {
   Grid,
   Typography,
 } from "@mui/material";
-import { SakeCard } from "@/features/sake/components/SakeCard";
-import { SakeDetailDialog } from "@/features/sake/components/SakeDetailDialog";
-import { useSakeList } from "@/features/sake/hooks/useSakeList";
+import { SakeCard } from "@/features/stocks/components/SakeCard";
+import { SakeDetailDialog } from "@/features/stocks/components/SakeDetailDialog";
+import { useSakeList } from "@/features/stocks/hooks/useSakeList";
 import type { Sake } from "@/types/sake";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
