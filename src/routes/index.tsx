@@ -20,7 +20,7 @@ const routes: RouteObject[] = [
       },
       {
         path: "stock",
-        element: <SakeStocks />
+        element: <SakeStocks />,
       },
     ],
   },
