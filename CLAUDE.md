@@ -1,11 +1,10 @@
 # CLAUDE.md
 
+このファイルは、Claude Code (claude.ai/code) がこのリポジトリで作業する際のガイダンスを提供します。
+
 ユーザーに質問を要求する際は、できる限りAskUserQuestionを使用してください。
 必要な情報のみを簡潔に回答してください。
 複数の方法や提案がある場合は、まず比較に必要な最小限の情報のみを示してください。選択後に、該当する方法の詳細を説明してください。
-
-
-このファイルは、Claude Code (claude.ai/code) がこのリポジトリで作業する際のガイダンスを提供します。
 
 ## 前提
 
@@ -86,7 +85,7 @@ docs:📚コミットガイドラインをCLAUDE.mdに追記(#22299)
 - **"Co-Authored-By: Claude" などのクレジット表記は含めない**
 - コミットメッセージは純粋に変更内容のみを記述する
 - 変更の「理由」や「影響」を明確に記述する
-- チケット番号には、ブランチ名の `feaure/xxxxx` の `xxxxx` の部分の値を使用する
+- チケット番号には、ブランチ名の `feature/xxxxx` の `xxxxx` の部分の値を使用する
 
 **❌ 避けるべきコミットメッセージ例**:
 
@@ -175,14 +174,32 @@ deal_codeによる既存レコード検索でUPSERTを実装：
 
 ## 開発コマンド
 
-- `make dev` - **重要**Claude はこれを実行しないでください。確認したい場合はユーザーに実行するように依頼してください。
-- `make build` - プロダクション用ビルド(TypeScript コンパイル + Vite ビルド)
-- `make lint` - Biome リンターを実行
-- `make format` - Biome でコードフォーマット
+パッケージマネージャー: bun
 
-## アーキテクチャ概要
+| コマンド | 説明 |
+|---------|------|
+| `make dev` | 開発サーバー起動（ポート3000）<br>**重要**: Claude はこれを実行しないでください。確認したい場合はユーザーに実行するように依頼してください。 |
+| `make build` | 本番ビルド（tsc + vite build） |
+| `make test` | テスト実行 |
+| `make test-watch` | テストをウォッチモードで実行 |
+| `make lint` | Biomeでリント実行 |
+| `make format` | Biomeでフォーマット |
+| `make api-generate` | OpenAPI仕様からAPIクライアント自動生成 |
+| `make deps` | 依存関係インストール |
+
+## アーキテクチャ
 
 Vite ベースの React TypeScript フロントエンドで、オペレーション最適化インターフェースとして構築されています。
+
+### 層構造
+
+Pages → Features(Components + Hooks) → Mappers → API Client
+
+- **pages/**: ルート単位のページコンポーネント
+- **features/**: 機能単位でコンポーネントとフックをまとめる（例: `features/sake/`）
+- **mappers/**: APIレスポンス型からドメインモデル型への変換
+- **lib/api/generated.ts**: Orvalで自動生成されたAPIクライアント（手動編集不可）
+- **types/**: ドメインモデルの型定義
 
 ### インポートパス規約
 
@@ -190,9 +207,28 @@ Vite ベースの React TypeScript フロントエンドで、オペレーショ
 - 相対インポート(`./`、`../`)は Biome リンタールールで禁止
 - パスマッピングは`tsconfig.json`で`@/*`を`src/*`にマッピング
 
-### API アーキテクチャ
+### APIクライアント
 
+- Orval による OpenAPI 仕様からの自動生成（`make api-generate`）
+- 仕様ファイル: `external/backend-api/api/openapi.bundled.yaml`
+- Axios カスタムインスタンス（`src/lib/axios/client.ts`）使用
+- Exponential backoff リトライ（5xxエラー、ネットワークエラー時、最大3回）
 - `src/api/apiBase.ts`に型付きラッパーを持つ集約 API クライアント
 - 汎用関数: `apiGet<T>`、`apiPost<T,P>`、`apiPut<T,P>`、`apiDelete<T>`
 - 機能別 API モジュール(例: `src/api/user.ts`)
 - HTTP クライアント設定は`src/api/httpClient.ts`
+
+### データ変換パターン
+
+APIレスポンス（snake_case）→ Mapper → ドメインモデル（camelCase）
+
+```typescript
+// API型: ApiSake (generated.ts) → ドメイン型: Sake (types/sake.ts)
+// 変換: mapSakeFromApi() (mappers/sakeMapper.ts)
+```
+
+## コード規約
+
+- パスエイリアス: `@/*` → `./src/*`
+- リント: Biome（`noExplicitAny`、`noUnusedVariables` がエラー）
+- 日本語入力バリデーション: `src/utils/validation.ts` を使用
