@@ -13,7 +13,7 @@ import type { Sake } from "@/types/sake";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-export const SakeStock = () => {
+export const SakeStocks = () => {
   const { t } = useTranslation();
   const { sakes, isLoading, error } = useSakeList();
   const [selectedSake, setSelectedSake] = useState<Sake | null>(null);

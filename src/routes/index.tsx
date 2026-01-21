@@ -3,7 +3,7 @@ import { AppLayout } from "@/components/layouts/AppLayout";
 import { Home } from "@/pages/Home";
 import { NotFound } from "@/pages/NotFound";
 import { SakeList } from "@/pages/SakeList";
-import { SakeStock } from "@/pages/SakeStock";
+import { SakeStocks } from "@/pages/SakeStocks";
 
 const routes: RouteObject[] = [
   {
@@ -20,7 +20,7 @@ const routes: RouteObject[] = [
       },
       {
         path: "stock",
-        element: <SakeStock />
+        element: <SakeStocks />
       },
     ],
   },
