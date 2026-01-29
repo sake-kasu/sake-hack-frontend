@@ -14,6 +14,7 @@ import type { Sake } from "@/types/sake";
 type SakeDetailDialogProps = {
   sake: Sake | null;
   open: boolean;
+  mode: 'new' | 'edit';
   onClose: () => void;
 };
 
@@ -31,7 +32,7 @@ export const SakeDetailDialog = ({
       <DialogTitle>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            {sake.name}
+            {sake.sakeName.name}
           </Typography>
           <IconButton
             edge="end"
@@ -58,7 +59,7 @@ export const SakeDetailDialog = ({
           >
             <img
               src={sake.imageUrl}
-              alt={sake.name}
+              alt={sake.sakeName.name}
               style={{
                 maxWidth: "100%",
                 maxHeight: "100%",
@@ -139,6 +140,23 @@ export const SakeDetailDialog = ({
             更新日: {sake.updatedAt.toLocaleDateString("ja-JP")}
           </Typography>
         </Box>
+        <Button
+  onClick={onCancel}
+  startIcon={<CloseIcon />}
+  color="inherit"
+>
+  キャンセル
+</Button>
+
+<Button
+  onClick={onSave}
+  startIcon={<SaveIcon />}
+  variant="contained"
+  color="primary"
+>
+  保存
+</Button>
+
       </DialogContent>
     </Dialog>
   );

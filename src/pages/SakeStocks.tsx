@@ -9,6 +9,12 @@ export const SakeStocks = () => {
   const { t } = useTranslation();
   const { sakes, isLoading, error } = useSakeList();
   const [selectedSake, setSelectedSake] = useState<Sake | null>(null);
+  const [mode, setMode] = useState<"new" | "edit" >("new")
+
+  const handleCardClick = (sake: Sake) => {
+    setSelectedSake(sake);
+    setMode("edit")
+  };
 
   const handleDialogClose = () => {
     setSelectedSake(null);
@@ -26,6 +32,7 @@ export const SakeStocks = () => {
       <SakeDetailDialog
         sake={selectedSake}
         open={selectedSake !== null}
+        mode={mode}
         onClose={handleDialogClose}
       />
     </>
