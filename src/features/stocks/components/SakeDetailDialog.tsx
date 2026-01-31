@@ -14,7 +14,6 @@ export type SakeDetailForm = {
   abv: string;
   purchaseVolume: string;
   remainingVolume: string;
-  drinkStyle: string;
   memo: string;
   price: string;
   imageUrl: string | null;
@@ -46,7 +45,6 @@ export const SakeDetailDialog = ({
     abv: "",
     purchaseVolume: "",
     remainingVolume: "",
-    drinkStyle: "",
     price: "",
     imageUrl: null,
     memo: "",
