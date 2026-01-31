@@ -20,11 +20,15 @@ describe("isValidInput", () => {
 
     // 全角英字
     it("全角英字（小文字）を許可", () => {
-      expect(isValidInput("ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ")).toBe(true);
+      expect(
+        isValidInput("ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ"),
+      ).toBe(true);
     });
 
     it("全角英字（大文字）を許可", () => {
-      expect(isValidInput("ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ")).toBe(true);
+      expect(
+        isValidInput("ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ"),
+      ).toBe(true);
     });
 
     // 全角数字
@@ -43,7 +47,7 @@ describe("isValidInput", () => {
 
     it("ひらがな（濁音・半濁音）を許可", () => {
       expect(
-        isValidInput("がぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽ")
+        isValidInput("がぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽ"),
       ).toBe(true);
     });
 
@@ -58,7 +62,7 @@ describe("isValidInput", () => {
 
     it("全角カタカナ（濁音・半濁音）を許可", () => {
       expect(
-        isValidInput("ガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポ")
+        isValidInput("ガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポ"),
       ).toBe(true);
     });
 

@@ -2,7 +2,7 @@
 export type SakeName = {
   name: string;
   phonetic: string;
-}
+};
 
 export type SakeCategory = {
   id: number;
@@ -12,7 +12,7 @@ export type SakeCategory = {
 export type SakeKind = {
   id: number;
   name: string;
-}
+};
 
 export type Brewery = {
   id: number;
@@ -37,12 +37,12 @@ export type Sake = {
   name: string;
   category: SakeCategory;
   imageUrl: string;
-}
+};
 
 // 酒詳細画面で必要な全ての情報
 export type SakeDetail = {
   id: number; // 一意に判別するID
-  sakeName: SakeName // その酒の名前
+  sakeName: SakeName; // その酒の名前
   category: SakeCategory; // 大分類
   kind: string[]; // 小分類
   originRegion: string; // 産地（一旦場所だけ）
