@@ -3,6 +3,7 @@ import { AppLayout } from "@/components/layouts/AppLayout";
 import { Home } from "@/pages/Home";
 import { NotFound } from "@/pages/NotFound";
 import { SakeList } from "@/pages/SakeList";
+import { SakeStocks } from "@/pages/SakeStocks";
 
 const routes: RouteObject[] = [
   {
@@ -16,6 +17,10 @@ const routes: RouteObject[] = [
       {
         path: "sakes",
         element: <SakeList />,
+      },
+      {
+        path: "stock",
+        element: <SakeStocks />
       },
     ],
   },
