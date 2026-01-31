@@ -1,4 +1,3 @@
-import CloseIcon from "@mui/icons-material/Close";
 import {
   Box,
   Chip,
@@ -9,22 +8,86 @@ import {
   IconButton,
   Typography,
 } from "@mui/material";
-import type { Sake } from "@/types/sake";
+import type { Brewery, DrinkStyle, SakeCategory, SakeDetail, SakeKind, SakeName } from "@/types/sake";
+import { Button } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import SaveIcon from "@mui/icons-material/Save";
+import { useEffect, useState } from "react";
+import type { CategoryEnum } from "@/config";
+
+export type SakeDetailForm = {
+  id: number | null;
+  name: string;
+  phonetic: string;
+  category: CategoryEnum | null; // ENUM String
+  kind: string;
+  originRegion: string;
+  abv: string;
+  purchaseVolume: string;
+  remainingVolume: string;
+  memo: string;
+  price: string;
+  imageUrl: string | null;
+};
 
 type SakeDetailDialogProps = {
-  sake: Sake | null;
+  sakeId: number | undefined;
   open: boolean;
-  mode: 'new' | 'edit';
+  mode: 'new' | 'edit' | null;
   onClose: () => void;
 };
 
 export const SakeDetailDialog = ({
-  sake,
+  sakeId,
   open,
+  mode,
   onClose,
 }: SakeDetailDialogProps) => {
-  if (!sake) {
-    return null;
+
+  const [isLoading,setIsLoading] = useState(true)
+  // 戻り値の初期値用
+  const [sake,setSake] = useState()
+  // 編集用
+  const [forms, setForms] = useState<SakeDetailForm>({
+    id: 0,
+    sakeName: {
+      name: "",
+      phonetic: ""
+    },
+    category: {
+      id: 0
+      name: ""
+    }
+
+
+  })
+  // sakeIdを使って酒詳細を取得
+  useEffect(()=>{
+    if(mode=="edit" && sakeId){
+      // APIの戻り値を詰める
+    } else if(mode=="new") {
+      setIsLoading(false)
+    } else {
+      return 
+    }
+  },[sakeId])
+
+  const handleSave = () =>{
+    // FIXME API実装
+    if (mode === "new") {
+
+    } else [
+
+    ]
+    onClose()
+  }
+
+  if (isLoading){
+    return (
+      <>
+        読み込み中
+      </>
+    )
   }
 
   return (
@@ -32,7 +95,7 @@ export const SakeDetailDialog = ({
       <DialogTitle>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            {sake.sakeName.name}
+            { sake.sakeName.name}
           </Typography>
           <IconButton
             edge="end"
@@ -141,7 +204,7 @@ export const SakeDetailDialog = ({
           </Typography>
         </Box>
         <Button
-  onClick={onCancel}
+  onClick={onClose}
   startIcon={<CloseIcon />}
   color="inherit"
 >
@@ -149,12 +212,12 @@ export const SakeDetailDialog = ({
 </Button>
 
 <Button
-  onClick={onSave}
+  onClick={handleSave}
   startIcon={<SaveIcon />}
   variant="contained"
   color="primary"
 >
-  保存
+  {mode === "edit" ? "更新" : "保存"}
 </Button>
 
       </DialogContent>

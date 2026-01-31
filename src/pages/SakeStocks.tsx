@@ -4,20 +4,28 @@ import { SakeListLayout } from "@/components/layouts/SakeListLayout";
 import { SakeDetailDialog } from "@/features/stocks/components/SakeDetailDialog";
 import { useSakeList } from "@/features/stocks/hooks/useSakeList";
 import type { Sake } from "@/types/sake";
+import { Fab } from "@mui/material";
 
 export const SakeStocks = () => {
   const { t } = useTranslation();
   const { sakes, isLoading, error } = useSakeList();
-  const [selectedSake, setSelectedSake] = useState<Sake | null>(null);
-  const [mode, setMode] = useState<"new" | "edit" >("new")
+  const [selectedSake, setSelectedSake] = useState<Sake | null>(null); // ここ別にidとかだけで良くね クリックしたら詳細API叩くし sakeとsakeDetailが欲しい
+  // sakeに必要なのはidとsakeNameと大分類とimageurlくらいでは？
+  const [open, setOpen] = useState(false)
 
   const handleCardClick = (sake: Sake) => {
     setSelectedSake(sake);
-    setMode("edit")
+    setOpen(true)
   };
+
+  const handleAddClick = () => {
+    setSelectedSake(null)
+    setOpen(true)
+  }
 
   const handleDialogClose = () => {
     setSelectedSake(null);
+    setOpen(false)
   };
 
   return (
@@ -27,12 +35,17 @@ export const SakeStocks = () => {
         sakes={sakes}
         isLoading={isLoading}
         error={error}
-        onCardClick={setSelectedSake}
+        onCardClick={handleCardClick}
+        floatingAction={
+          <Fab color="primary" onClick={handleAddClick}>
+            +
+          </Fab>
+        }
       />
       <SakeDetailDialog
-        sake={selectedSake}
-        open={selectedSake !== null}
-        mode={mode}
+        sakeId={selectedSake?.id}
+        open={open}
+        mode={selectedSake ? "edit" : "new"}
         onClose={handleDialogClose}
       />
     </>

@@ -4,12 +4,12 @@ export type SakeName = {
   phonetic: string;
 }
 
-export type SakeKind = {
+export type SakeCategory = {
   id: number;
   name: string;
 };
 
-export type SakeType = {
+export type SakeKind = {
   id: number;
   name: string;
 }
@@ -31,14 +31,23 @@ export type DrinkStyle = {
   description: string | null;
 };
 
+// 酒一覧画面で必要な最低限の情報
 export type Sake = {
+  id: number;
+  name: string;
+  category: SakeCategory;
+  imageUrl: string;
+}
+
+// 酒詳細画面で必要な全ての情報
+export type SakeDetail = {
   id: number; // 一意に判別するID
   sakeName: SakeName // その酒の名前
-  kind: SakeKind; // 大分類
-  type: SakeType; // 小分類
-  brewery: Brewery; // 産地
+  category: SakeCategory; // 大分類
+  
+  kind: string[]; // 小分類
+  originRegion: string; // 産地（一旦場所だけ）
   abv: number; // 度数
-  tasteNotes: string; // いる？
   PurchaseVolume: number; // 購入時容量
   RemainingVolume: number; // 残容量 25%刻みなら0~4でも良い気がする
   memo: string | null; // 自由記述
