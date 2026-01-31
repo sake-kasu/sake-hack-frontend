@@ -2,6 +2,7 @@ import { AppBar, Toolbar, IconButton, Typography, Box } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import LanguageIcon from "@mui/icons-material/Language";
 import { useTranslation } from "react-i18next";
+import { AuthStatus } from "@/features/login/components";
 
 type AppHeaderProps = {
   onMenuClick: () => void;
@@ -38,7 +39,7 @@ export const AppHeader = ({ onMenuClick, showMenuButton }: AppHeaderProps) => {
         <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
           {t("layout.appTitle")}
         </Typography>
-        <Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <IconButton
             color="inherit"
             aria-label={t("layout.changeLanguage")}
@@ -46,6 +47,7 @@ export const AppHeader = ({ onMenuClick, showMenuButton }: AppHeaderProps) => {
           >
             <LanguageIcon />
           </IconButton>
+          <AuthStatus />
         </Box>
       </Toolbar>
     </AppBar>

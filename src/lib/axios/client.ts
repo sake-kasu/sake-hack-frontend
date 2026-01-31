@@ -3,6 +3,8 @@ import axios, {
   type AxiosInstance,
   type InternalAxiosRequestConfig,
 } from "axios";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase/config";
 
 const MAX_RETRIES = 3;
 const INITIAL_RETRY_DELAY = 1000; // 1秒
@@ -27,20 +29,30 @@ export const createAxiosClient = (): AxiosInstance => {
 
   // リクエストインターセプター
   client.interceptors.request.use(
-    (config) => {
-      // 認証トークンなどを追加
+    async (config) => {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        const idToken = await currentUser.getIdToken();
+        config.headers.Authorization = `Bearer ${idToken}`;
+      }
       return config;
     },
     (error) => Promise.reject(error),
   );
 
-  // レスポンスインターセプター(exponential backoff)
+  // レスポンスインターセプター(exponential backoff + 401処理)
   client.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
       const config = error.config as RequestConfigWithRetry | undefined;
 
       if (!config) {
+        return Promise.reject(error);
+      }
+
+      // 401エラー時はサインアウト
+      if (error.response?.status === 401 && auth.currentUser) {
+        await signOut(auth);
         return Promise.reject(error);
       }
 
