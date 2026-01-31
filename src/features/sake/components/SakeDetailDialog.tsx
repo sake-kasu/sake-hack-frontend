@@ -9,10 +9,10 @@ import {
   IconButton,
   Typography,
 } from "@mui/material";
-import type { Sake } from "@/types/sake";
+import type { SakeDetail } from "@/types/sake";
 
 type SakeDetailDialogProps = {
-  sake: Sake | null;
+  sake: SakeDetail | null;
   open: boolean;
   onClose: () => void;
 };
@@ -26,12 +26,17 @@ export const SakeDetailDialog = ({
     return null;
   }
 
+  // おすすめの飲み方を配列に変換
+  const drinkStyleList = sake.drinkStyles && sake.drinkStyles.trim() !== ""
+    ? sake.drinkStyles.split(",").map(style => style.trim())
+    : [];
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            {sake.name}
+            {sake.sakeName.name}
           </Typography>
           <IconButton
             edge="end"
@@ -58,7 +63,7 @@ export const SakeDetailDialog = ({
           >
             <img
               src={sake.imageUrl}
-              alt={sake.name}
+              alt={sake.sakeName.name}
               style={{
                 maxWidth: "100%",
                 maxHeight: "100%",
@@ -72,18 +77,14 @@ export const SakeDetailDialog = ({
           <Typography variant="subtitle2" color="text.secondary">
             種類
           </Typography>
-          <Typography variant="body1">{sake.type.name}</Typography>
+          <Typography variant="body1">{sake.category.name}</Typography>
         </Box>
 
         <Box sx={{ mb: 2 }}>
           <Typography variant="subtitle2" color="text.secondary">
-            酒造
+            産地
           </Typography>
-          <Typography variant="body1">{sake.brewery.name}</Typography>
-          <Typography variant="body2" color="text.secondary">
-            {sake.brewery.originCountry}
-            {sake.brewery.originRegion && ` / ${sake.brewery.originRegion}`}
-          </Typography>
+          <Typography variant="body1">{sake.originRegion}</Typography>
         </Box>
 
         <Box sx={{ mb: 2 }}>
@@ -92,15 +93,7 @@ export const SakeDetailDialog = ({
           </Typography>
           <Typography variant="body1">{sake.abv}%</Typography>
         </Box>
-
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="subtitle2" color="text.secondary">
-            味の特徴
-          </Typography>
-          <Typography variant="body1">{sake.tasteNotes}</Typography>
-        </Box>
-
-        {sake.drinkStyles.length > 0 && (
+        {drinkStyleList.length > 0 && (
           <Box sx={{ mb: 2 }}>
             <Typography
               variant="subtitle2"
@@ -110,8 +103,8 @@ export const SakeDetailDialog = ({
               おすすめの飲み方
             </Typography>
             <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-              {sake.drinkStyles.map((style) => (
-                <Chip key={style.id} label={style.name} size="small" />
+              {drinkStyleList.map((style, index) => (
+                <Chip key={index} label={style} size="small" />
               ))}
             </Box>
           </Box>
