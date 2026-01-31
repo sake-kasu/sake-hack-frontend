@@ -25,4 +25,7 @@ export const CATEGORY_LABEL = {
   [CATEGORY_ENUM.OTHER]: "その他",
 } as const;
 
-
+// 酒残量の選択肢
+const remainingVolumeOptions = [
+  "0","25","50","75","100"
+]

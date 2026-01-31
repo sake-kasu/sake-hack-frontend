@@ -44,14 +44,13 @@ export type SakeDetail = {
   id: number; // 一意に判別するID
   sakeName: SakeName // その酒の名前
   category: SakeCategory; // 大分類
-  
   kind: string[]; // 小分類
   originRegion: string; // 産地（一旦場所だけ）
   abv: number; // 度数
-  PurchaseVolume: number; // 購入時容量
+  PurchaseVolume: number; // 購入時容量s
   RemainingVolume: number; // 残容量 25%刻みなら0~4でも良い気がする
   memo: string | null; // 自由記述
-  drinkStyles: DrinkStyle[]; // おすすめの飲み方
+  drinkStyles: string; // おすすめの飲み方
   price: number; // 購入時価格
   imageUrl: string | null; // 将来的な画像表示用
   createdAt: Date;

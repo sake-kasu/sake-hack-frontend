@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Box,
   Chip,
@@ -7,6 +8,7 @@ import {
   Divider,
   IconButton,
   Typography,
+  TextField,
 } from "@mui/material";
 import type { Brewery, DrinkStyle, SakeCategory, SakeDetail, SakeKind, SakeName } from "@/types/sake";
 import { Button } from "@mui/material";
@@ -25,6 +27,7 @@ export type SakeDetailForm = {
   abv: string;
   purchaseVolume: string;
   remainingVolume: string;
+  drinkStyle: string;
   memo: string;
   price: string;
   imageUrl: string | null;
@@ -50,16 +53,18 @@ export const SakeDetailDialog = ({
   // 編集用
   const [forms, setForms] = useState<SakeDetailForm>({
     id: 0,
-    sakeName: {
-      name: "",
-      phonetic: ""
-    },
-    category: {
-      id: 0
-      name: ""
-    }
-
-
+    name: "",
+    phonetic: "",
+    category: null,
+    kind: "",
+    originRegion: "",
+    adv: "",
+    purchaseVolume: "",
+    remainingVolume: "",
+    drinkStyle: "",
+    price: "",
+    imageUrl: null,
+    memo: "",
   })
   // sakeIdを使って酒詳細を取得
   useEffect(()=>{
@@ -91,136 +96,191 @@ export const SakeDetailDialog = ({
   }
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            { sake.sakeName.name}
-          </Typography>
-          <IconButton
-            edge="end"
-            color="inherit"
-            onClick={onClose}
-            aria-label="close"
-          >
-            <CloseIcon />
-          </IconButton>
-        </Box>
-      </DialogTitle>
-      <DialogContent dividers>
-        {sake.imageUrl && (
-          <Box
-            sx={{
-              width: "100%",
-              height: 300,
-              mb: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "grey.100",
+  <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <DialogTitle>
+      <Box sx={{ display: "flex", alignItems: "center" }}>
+        <TextField
+          label="酒の名前"
+          value={sake.sakeName.name}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setSake({
+              ...sake,
+              sakeName: { ...sake.sakeName, name: e.target.value }
+            })
+          }
+          fullWidth
+        />
+        <IconButton
+          edge="end"
+          color="inherit"
+          onClick={onClose}
+          aria-label="close"
+        >
+          <CloseIcon />
+        </IconButton>
+      </Box>
+    </DialogTitle>
+
+    <DialogContent dividers>
+      {sake.imageUrl && (
+        <Box
+          sx={{
+            width: "100%",
+            height: 300,
+            mb: 2,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "grey.100",
+          }}
+        >
+          <img
+            src={sake.imageUrl}
+            alt={sake.sakeName.name}
+            style={{
+              maxWidth: "100%",
+              maxHeight: "100%",
+              objectFit: "contain",
             }}
-          >
-            <img
-              src={sake.imageUrl}
-              alt={sake.sakeName.name}
-              style={{
-                maxWidth: "100%",
-                maxHeight: "100%",
-                objectFit: "contain",
-              }}
-            />
-          </Box>
-        )}
-
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="subtitle2" color="text.secondary">
-            種類
-          </Typography>
-          <Typography variant="body1">{sake.type.name}</Typography>
+          />
         </Box>
+      )}
 
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="subtitle2" color="text.secondary">
-            酒造
-          </Typography>
-          <Typography variant="body1">{sake.brewery.name}</Typography>
-          <Typography variant="body2" color="text.secondary">
-            {sake.brewery.originCountry}
-            {sake.brewery.originRegion && ` / ${sake.brewery.originRegion}`}
-          </Typography>
-        </Box>
+      {/* 種類 */}
+      <Box sx={{ mb: 2 }}>
+        <TextField
+          label="種類"
+          value={sake.type.name}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setSake({
+              ...sake,
+              type: { ...sake.type, name: e.target.value }
+            })
+          }
+          fullWidth
+        />
+      </Box>
 
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="subtitle2" color="text.secondary">
-            アルコール度数
-          </Typography>
-          <Typography variant="body1">{sake.abv}%</Typography>
-        </Box>
+      {/* 酒造 */}
+      <Box sx={{ mb: 2 }}>
+        <TextField
+          label="酒造名"
+          value={sake.brewery.name}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setSake({
+              ...sake,
+              brewery: { ...sake.brewery, name: e.target.value }
+            })
+          }
+          fullWidth
+        />
 
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="subtitle2" color="text.secondary">
-            味の特徴
-          </Typography>
-          <Typography variant="body1">{sake.tasteNotes}</Typography>
-        </Box>
+        <TextField
+          label="国"
+          value={sake.brewery.originCountry}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setSake({
+              ...sake,
+              brewery: { ...sake.brewery, originCountry: e.target.value }
+            })
+          }
+          fullWidth
+          sx={{ mt: 1 }}
+        />
 
-        {sake.drinkStyles.length > 0 && (
-          <Box sx={{ mb: 2 }}>
-            <Typography
-              variant="subtitle2"
-              color="text.secondary"
-              sx={{ mb: 1 }}
-            >
-              おすすめの飲み方
-            </Typography>
-            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-              {sake.drinkStyles.map((style) => (
-                <Chip key={style.id} label={style.name} size="small" />
-              ))}
-            </Box>
-          </Box>
-        )}
+        <TextField
+          label="地域"
+          value={sake.brewery.originRegion ?? ""}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setSake({
+              ...sake,
+              brewery: { ...sake.brewery, originRegion: e.target.value }
+            })
+          }
+          fullWidth
+          sx={{ mt: 1 }}
+        />
+      </Box>
 
-        {sake.memo && (
-          <>
-            <Divider sx={{ my: 2 }} />
-            <Box>
-              <Typography variant="subtitle2" color="text.secondary">
-                メモ
-              </Typography>
-              <Typography variant="body1">{sake.memo}</Typography>
-            </Box>
-          </>
-        )}
+      {/* アルコール度数 */}
+      <Box sx={{ mb: 2 }}>
+        <TextField
+          label="アルコール度数 (%)"
+          type="number"
+          value={sake.abv}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setSake({
+              ...sake,
+              abv: Number(e.target.value)
+            })
+          }
+          fullWidth
+        />
+      </Box>
 
-        <Divider sx={{ my: 2 }} />
-        <Box>
-          <Typography variant="caption" color="text.secondary">
-            作成日: {sake.createdAt.toLocaleDateString("ja-JP")}
-          </Typography>
-          <br />
-          <Typography variant="caption" color="text.secondary">
-            更新日: {sake.updatedAt.toLocaleDateString("ja-JP")}
-          </Typography>
-        </Box>
-        <Button
-  onClick={onClose}
-  startIcon={<CloseIcon />}
-  color="inherit"
->
-  キャンセル
-</Button>
+      {/* 味の特徴 */}
+      <Box sx={{ mb: 2 }}>
+        <TextField
+          label="味の特徴"
+          value={sake.tasteNotes}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setSake({
+              ...sake,
+              tasteNotes: e.target.value
+            })
+          }
+          fullWidth
+          multiline
+          minRows={2}
+        />
+      </Box>
 
-<Button
-  onClick={handleSave}
-  startIcon={<SaveIcon />}
-  variant="contained"
-  color="primary"
->
-  {mode === "edit" ? "更新" : "保存"}
-</Button>
+      {/* メモ */}
+      <Box sx={{ mb: 2 }}>
+        <TextField
+          label="メモ"
+          value={sake.memo ?? ""}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setSake({
+              ...sake,
+              memo: e.target.value
+            })
+          }
+          fullWidth
+          multiline
+          minRows={3}
+        />
+      </Box>
 
-      </DialogContent>
-    </Dialog>
-  );
-};
+      <Divider sx={{ my: 2 }} />
+
+      {/* 日付表示はそのまま */}
+      <Box>
+        <Typography variant="caption" color="text.secondary">
+          作成日: {sake.createdAt.toLocaleDateString("ja-JP")}
+        </Typography>
+        <br />
+        <Typography variant="caption" color="text.secondary">
+          更新日: {sake.updatedAt.toLocaleDateString("ja-JP")}
+        </Typography>
+      </Box>
+
+      <Button
+        onClick={onClose}
+        startIcon={<CloseIcon />}
+        color="inherit"
+      >
+        キャンセル
+      </Button>
+
+      <Button
+        onClick={handleSave}
+        startIcon={<SaveIcon />}
+        variant="contained"
+        color="primary"
+      >
+        {mode === "edit" ? "更新" : "保存"}
+      </Button>
+    </DialogContent>
+  </Dialog>
+);
