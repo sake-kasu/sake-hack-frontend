@@ -165,20 +165,6 @@ export const SakeDetailDialog = ({
           />
         </Box>
 
-        {/* 味の特徴 */}
-        <Box sx={{ mb: 2 }}>
-          <TextField
-            label="味の特徴"
-            value={forms.drinkStyle}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setForms({ ...forms, drinkStyle: e.target.value })
-            }
-            fullWidth
-            multiline
-            minRows={2}
-          />
-        </Box>
-
         {/* メモ */}
         <Box sx={{ mb: 2 }}>
           <TextField
