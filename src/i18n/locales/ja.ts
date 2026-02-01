@@ -18,6 +18,12 @@ export const ja = {
       closeDrawer: "メニューを閉じる",
       changeLanguage: "言語を変更",
     },
+    auth: {
+      loginWithGoogle: "Googleでログイン",
+      logout: "ログアウト",
+      userMenu: "ユーザーメニュー",
+      anonymousUser: "匿名ユーザー",
+    },
     sake: {
       list: {
         title: "酒一覧",

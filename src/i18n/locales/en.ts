@@ -18,6 +18,12 @@ export const en = {
       closeDrawer: "Close menu",
       changeLanguage: "Change language",
     },
+    auth: {
+      loginWithGoogle: "Login with Google",
+      logout: "Logout",
+      userMenu: "User menu",
+      anonymousUser: "Anonymous User",
+    },
     sake: {
       list: {
         title: "Sake List",

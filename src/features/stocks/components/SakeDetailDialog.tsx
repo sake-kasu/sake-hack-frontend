@@ -1,4 +1,13 @@
-import { Box, Dialog, DialogContent, DialogTitle, Divider, IconButton, TextField, Button } from "@mui/material";
+import {
+  Box,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  IconButton,
+  TextField,
+  Button,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import { useEffect, useState } from "react";
@@ -22,7 +31,7 @@ export type SakeDetailForm = {
 type SakeDetailDialogProps = {
   sakeId: number | undefined;
   open: boolean;
-  mode: 'new' | 'edit' | null;
+  mode: "new" | "edit" | null;
   onClose: () => void;
 };
 
@@ -32,8 +41,7 @@ export const SakeDetailDialog = ({
   mode,
   onClose,
 }: SakeDetailDialogProps) => {
-
-  const [isLoading,setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true);
   // 編集用
   const [forms, setForms] = useState<SakeDetailForm>({
     id: 0,
@@ -48,34 +56,30 @@ export const SakeDetailDialog = ({
     price: "",
     imageUrl: null,
     memo: "",
-  })
+  });
   // sakeIdを使って酒詳細を取得
-  useEffect(()=>{
-    if(mode=="edit" && sakeId){
+  useEffect(() => {
+    if (mode == "edit" && sakeId) {
       // APIの戻り値を詰める
-    } else if(mode=="new") {
-      setIsLoading(false)
+    } else if (mode == "new") {
+      setIsLoading(false);
     } else {
-      return 
+      return;
     }
-  },[sakeId])
+  }, [sakeId, mode]);
 
-  const handleSave = () =>{
+  const handleSave = () => {
     // FIXME API実装
     if (mode === "new") {
       // 新規保存処理
     } else {
       // 編集保存処理
     }
-    onClose()
-  }
+    onClose();
+  };
 
-  if (isLoading){
-    return (
-      <>
-        読み込み中
-      </>
-    )
+  if (isLoading) {
+    return <>読み込み中</>;
   }
 
   return (
@@ -181,11 +185,7 @@ export const SakeDetailDialog = ({
 
         {/* 日付表示は省略 or 別途管理が必要 */}
 
-        <Button
-          onClick={onClose}
-          startIcon={<CloseIcon />}
-          color="inherit"
-        >
+        <Button onClick={onClose} startIcon={<CloseIcon />} color="inherit">
           キャンセル
         </Button>
 
