@@ -16,9 +16,31 @@ const sleep = (ms: number): Promise<void> =>
     setTimeout(resolve, ms);
   });
 
+/**
+ * Runtime環境変数から API Base URL を取得
+ * window.__ENV__ が存在しない場合や API_BASE_URL が空の場合はエラー
+ */
+const getApiBaseUrl = (): string => {
+  // window.__ENV__ の存在チェック
+  if (typeof window === "undefined" || !window.__ENV__) {
+    throw new Error(
+      "ランタイム環境変数が読み込まれていません。env-config.jsがこのスクリプトより前に読み込まれていることを確認してください。",
+    );
+  }
+
+  const baseUrl = window.__ENV__.API_BASE_URL;
+
+  // 空文字列チェック
+  if (!baseUrl || baseUrl.trim() === "") {
+    throw new Error("API_BASE_URLがランタイム環境変数に設定されていません。");
+  }
+
+  return baseUrl;
+};
+
 export const createAxiosClient = (): AxiosInstance => {
   const client = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL,
+    baseURL: getApiBaseUrl(),
     timeout: 10000,
     headers: {
       "Content-Type": "application/json",

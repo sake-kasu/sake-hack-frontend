@@ -53,7 +53,7 @@ export const sanitizeInput = (value: string): string => {
  * 禁止文字の入力を自動的にブロック
  */
 export const createRestrictedInputHandler = (
-  onChange: (value: string) => void
+  onChange: (value: string) => void,
 ) => {
   return (e: React.ChangeEvent<HTMLInputElement>) => {
     const sanitized = sanitizeInput(e.target.value);

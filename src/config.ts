@@ -1,17 +1,17 @@
 // 酒大分類のENUM定義
 export const CATEGORY_ENUM = {
-    JAPANESE_SAKE : "JAPANESE_SAKE",
-    WHISKY : "WHISKY",
-    WINE : "WINE",
-    BEER : "BEER",
-    SHOCHU : "SHOCHU",
-    AWAMORI : "AWAMORI",
-    RIQUEUR : "RIQUEUR",
-    SPIRITS : "SPIRITS",
-    OTHER : "OTHER",
-} as const 
+  JAPANESE_SAKE: "JAPANESE_SAKE",
+  WHISKY: "WHISKY",
+  WINE: "WINE",
+  BEER: "BEER",
+  SHOCHU: "SHOCHU",
+  AWAMORI: "AWAMORI",
+  RIQUEUR: "RIQUEUR",
+  SPIRITS: "SPIRITS",
+  OTHER: "OTHER",
+} as const;
 
-export type CategoryEnum = typeof CATEGORY_ENUM[keyof typeof CATEGORY_ENUM];
+export type CategoryEnum = (typeof CATEGORY_ENUM)[keyof typeof CATEGORY_ENUM];
 
 export const CATEGORY_LABEL = {
   [CATEGORY_ENUM.JAPANESE_SAKE]: "日本酒",
@@ -26,6 +26,4 @@ export const CATEGORY_LABEL = {
 } as const;
 
 // 酒残量の選択肢
-const remainingVolumeOptions = [
-  "0","25","50","75","100"
-]
+const remainingVolumeOptions = ["0", "25", "50", "75", "100"];

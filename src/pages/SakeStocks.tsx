@@ -11,21 +11,21 @@ export const SakeStocks = () => {
   const { sakes, isLoading, error } = useSakeList();
   const [selectedSake, setSelectedSake] = useState<Sake | null>(null); // ここ別にidとかだけで良くね クリックしたら詳細API叩くし sakeとsakeDetailが欲しい
   // sakeに必要なのはidとsakeNameと大分類とimageurlくらいでは？
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   const handleCardClick = (sake: Sake) => {
     setSelectedSake(sake);
-    setOpen(true)
+    setOpen(true);
   };
 
   const handleAddClick = () => {
-    setSelectedSake(null)
-    setOpen(true)
-  }
+    setSelectedSake(null);
+    setOpen(true);
+  };
 
   const handleDialogClose = () => {
     setSelectedSake(null);
-    setOpen(false)
+    setOpen(false);
   };
 
   return (
