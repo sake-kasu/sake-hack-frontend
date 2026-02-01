@@ -1,10 +1,4 @@
 /// <reference types="vite/client" />
 
-type ImportMetaEnv = {
-  readonly VITE_API_BASE_URL: string;
-  readonly VITE_APP_TITLE: string;
-};
-
-type ImportMeta = {
-  readonly env: ImportMetaEnv;
-};
+// Viteのビルド時環境変数は使用しない
+// Runtime環境変数は src/types/env.d.ts で定義
