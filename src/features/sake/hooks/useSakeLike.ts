@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 
 const STORAGE_KEY = "sake-likes";
 const DEBOUNCE_DELAY = 1000; // 連打対策: 300ms
@@ -33,10 +33,12 @@ const saveLikesToStorage = (likes: Set<number>): void => {
  * @param sakeId - 酒のID
  * @param initialLikeCount - 初期いいね数（APIから取得した値）
  */
+
 export const useSakeLike = (sakeId: number, initialLikeCount: number) => {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(initialLikeCount);
   const [isProcessing, setIsProcessing] = useState(false);
+  const isProcessingRef = useRef(false);
 
   // 初期化: LocalStorageからいいね状態を読み込み
   useEffect(() => {
@@ -47,8 +49,9 @@ export const useSakeLike = (sakeId: number, initialLikeCount: number) => {
   // いいねトグル処理
   const toggleLike = useCallback(() => {
     // 連打対策: 処理中は何もしない
-    if (isProcessing) return;
+    if (isProcessingRef.current) return;
 
+    isProcessingRef.current = true;
     setIsProcessing(true);
 
     const likes = getLikesFromStorage();
@@ -94,11 +97,12 @@ export const useSakeLike = (sakeId: number, initialLikeCount: number) => {
 
     // 連打対策: debounce
     setTimeout(() => {
+      isProcessingRef.current = false;
       setIsProcessing(false);
       // TODO: API実装後、ここでapiCall()を呼び出す
     }, DEBOUNCE_DELAY);
 
-  }, [sakeId, isProcessing, initialLikeCount]);
+  }, [sakeId]);
 
   return {
     isLiked,
