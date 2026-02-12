@@ -53,6 +53,7 @@ export type SakeDetail = {
   drinkStyles: string; // おすすめの飲み方
   price: number; // 購入時価格
   imageUrl: string | null; // 将来的な画像表示用
+  likeCount: number; // いいね数（TODO: API実装後に取得）
   createdAt: Date;
   updatedAt: Date;
 };
