@@ -21,8 +21,7 @@ const getLikesFromStorage = (): Set<number> => {
       // 型が不正な場合は空のSetを返す
       return new Set();
     }
-  } catch (error) {
-    console.error("Failed to load likes from localStorage:", error);
+  } catch {
     return new Set();
   }
 };
@@ -39,11 +38,9 @@ const saveLikesToStorage = (likes: Set<number>): void => {
       arr.every((item) => typeof item === "number" && Number.isFinite(item))
     ) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
-    } else {
-      console.error("Attempted to save invalid likes array to localStorage:", arr);
     }
-  } catch (error) {
-    console.error("Failed to save likes to localStorage:", error);
+  } catch {
+    // LocalStorage書き込み失敗時は静かに無視
   }
 };
 

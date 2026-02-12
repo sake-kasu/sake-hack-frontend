@@ -26,4 +26,4 @@ export const CATEGORY_LABEL = {
 } as const;
 
 // 酒残量の選択肢
-const remainingVolumeOptions = ["0", "25", "50", "75", "100"];
+export const remainingVolumeOptions = ["0", "25", "50", "75", "100"];
