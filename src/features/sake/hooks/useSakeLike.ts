@@ -16,7 +16,7 @@ const getLikesFromStorage = (): Set<number> => {
       Array.isArray(parsed) &&
       parsed.every((item) => typeof item === "number" && Number.isFinite(item))
     ) {
-      return new Set(parsed as number[]);
+      return new Set(parsed);
     } else {
       // 型が不正な場合は空のSetを返す
       return new Set();
