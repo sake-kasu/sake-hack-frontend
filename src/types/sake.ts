@@ -31,12 +31,25 @@ export type DrinkStyle = {
   description: string | null;
 };
 
-// 酒一覧画面で必要な最低限の情報
+export type SakeType = {
+  id: number;
+  name: string;
+};
+
+// APIレスポンスに対応するドメインモデル
 export type Sake = {
   id: number;
   name: string;
-  category: SakeCategory;
-  imageUrl: string;
+  type: SakeType;
+  brewery: Brewery;
+  abv: number;
+  tasteNotes: string;
+  memo: string | null;
+  drinkStyles: DrinkStyle[];
+  imageUrl: string | null;
+  likeCount: number;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 // 酒詳細画面で必要な全ての情報
