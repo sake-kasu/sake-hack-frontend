@@ -46,6 +46,7 @@ export const mapSakeFromApi = (apiSake: ApiSake): Sake => ({
   memo: apiSake.memo ?? null,
   drinkStyles: apiSake.drink_styles.map(mapDrinkStyleFromApi),
   imageUrl: null, // 将来的に実装
+  likeCount: 0, // TODO: API実装後、apiSake.like_count を使用
   createdAt: new Date(apiSake.created_at),
   updatedAt: new Date(apiSake.updated_at),
 });
