@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { Favorite, FavoriteBorder } from "@mui/icons-material";
 import type { Sake } from "@/types/sake";
-import { useSakeLike } from "../hooks/useSakeLike";
+import { useSakeLike } from "@/features/sake/hooks/useSakeLike";
 
 type SakeCardProps = {
   sake: Sake;
@@ -19,7 +19,7 @@ type SakeCardProps = {
 export const SakeCard = ({ sake, onClick }: SakeCardProps) => {
   const { isLiked, likeCount, toggleLike, isProcessing } = useSakeLike(
     sake.id,
-    sake.likeCount
+    sake.likeCount,
   );
 
   const handleLikeClick = (e: React.MouseEvent) => {
@@ -99,11 +99,7 @@ export const SakeCard = ({ sake, onClick }: SakeCardProps) => {
                 <FavoriteBorder sx={{ color: "grey.500", fontSize: 20 }} />
               )}
             </IconButton>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{ ml: 0.5 }}
-            >
+            <Typography variant="body2" color="text.secondary" sx={{ ml: 0.5 }}>
               {likeCount}
             </Typography>
           </Box>

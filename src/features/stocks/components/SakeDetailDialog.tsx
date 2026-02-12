@@ -7,10 +7,16 @@ import {
   IconButton,
   TextField,
   Button,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
-import { useEffect, useState } from "react";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+import { useEffect, useState, useRef } from "react";
 import type { CategoryEnum } from "@/config";
 
 export type SakeDetailForm = {
@@ -57,16 +63,78 @@ export const SakeDetailDialog = ({
     imageUrl: null,
     memo: "",
   });
+
+  // 画像選択メニュー用
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const menuOpen = Boolean(anchorEl);
+  const captureInputRef = useRef<HTMLInputElement>(null);
+  const selectInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageAreaClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleCaptureClick = () => {
+    handleMenuClose();
+    captureInputRef.current?.click();
+  };
+
+  const handleSelectClick = () => {
+    handleMenuClose();
+    selectInputRef.current?.click();
+  };
+
+  const handleImageDelete = () => {
+    setForms({ ...forms, imageUrl: null });
+    handleMenuClose();
+  };
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // MIMEタイプチェック
+    if (!file.type.startsWith("image/")) {
+      alert("画像ファイルを選択してください");
+      return;
+    }
+
+    // ファイルサイズ制限（5MB）
+    if (file.size > 5 * 1024 * 1024) {
+      alert("ファイルサイズは5MB以下にしてください");
+      return;
+    }
+
+    // FileReaderでプレビュー表示
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const { result } = e.target ?? {};
+      if (typeof result === "string") {
+        setForms({ ...forms, imageUrl: result });
+      }
+    };
+    reader.onerror = () => {
+      alert("画像の読み込みに失敗しました");
+    };
+    reader.readAsDataURL(file);
+
+    // input要素をリセット（同じファイルを再選択可能にする）
+    event.target.value = "";
+  };
   // sakeIdを使って酒詳細を取得
   useEffect(() => {
-    if (mode == "edit" && sakeId) {
+    if (mode === "edit" && sakeId) {
       // APIの戻り値を詰める
-    } else if (mode == "new") {
+    } else if (mode === "new") {
       setIsLoading(false);
     } else {
       return;
     }
-  }, [sakeId]);
+  }, [sakeId, mode]);
 
   const handleSave = () => {
     // FIXME API実装
@@ -106,18 +174,28 @@ export const SakeDetailDialog = ({
       </DialogTitle>
 
       <DialogContent dividers>
-        {forms.imageUrl && (
-          <Box
-            sx={{
-              width: "100%",
-              height: 300,
-              mb: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "grey.100",
-            }}
-          >
+        {/* 画像表示領域（クリックでメニュー表示） */}
+        <Box
+          onClick={handleImageAreaClick}
+          sx={{
+            width: "100%",
+            height: 300,
+            mb: 2,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "grey.100",
+            cursor: "pointer",
+            border: "2px dashed",
+            borderColor: "grey.400",
+            borderRadius: 1,
+            "&:hover": {
+              backgroundColor: "grey.200",
+              borderColor: "primary.main",
+            },
+          }}
+        >
+          {forms.imageUrl ? (
             <img
               src={forms.imageUrl}
               alt={forms.name}
@@ -127,8 +205,50 @@ export const SakeDetailDialog = ({
                 objectFit: "contain",
               }}
             />
-          </Box>
-        )}
+          ) : (
+            <Box sx={{ textAlign: "center", color: "grey.600" }}>
+              <AddPhotoAlternateIcon sx={{ fontSize: 60, mb: 1 }} />
+              <Box>画像を追加</Box>
+            </Box>
+          )}
+        </Box>
+
+        {/* 画像選択メニュー */}
+        <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleMenuClose}>
+          <MenuItem onClick={handleCaptureClick}>
+            <CameraAltIcon sx={{ mr: 1 }} />
+            写真を撮影
+          </MenuItem>
+          <MenuItem onClick={handleSelectClick}>
+            <PhotoLibraryIcon sx={{ mr: 1 }} />
+            写真を選択
+          </MenuItem>
+          {forms.imageUrl && (
+            <MenuItem onClick={handleImageDelete}>
+              <DeleteIcon sx={{ mr: 1 }} />
+              削除
+            </MenuItem>
+          )}
+        </Menu>
+
+        {/* 非表示のinput要素（カメラ撮影用） */}
+        <input
+          ref={captureInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          style={{ display: "none" }}
+          onChange={handleImageChange}
+        />
+
+        {/* 非表示のinput要素（画像選択用） */}
+        <input
+          ref={selectInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: "none" }}
+          onChange={handleImageChange}
+        />
 
         {/* 種類 */}
         <Box sx={{ mb: 2 }}>
