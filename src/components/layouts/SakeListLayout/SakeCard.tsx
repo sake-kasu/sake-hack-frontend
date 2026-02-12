@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { Favorite, FavoriteBorder } from "@mui/icons-material";
 import type { Sake } from "@/types/sake";
-import { useSakeLike } from "../hooks/useSakeLike";
+import { useSakeLike } from "@/features/sake/hooks/useSakeLike";
 
 type SakeCardProps = {
   sake: Sake;
