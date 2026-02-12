@@ -1,6 +1,7 @@
 import axios, {
   type AxiosError,
   type AxiosInstance,
+  type AxiosRequestConfig,
   type InternalAxiosRequestConfig,
 } from "axios";
 
@@ -96,8 +97,6 @@ export const createAxiosClient = (): AxiosInstance => {
 export const apiClient = createAxiosClient();
 
 // Orval用のカスタムインスタンス関数
-export const customInstance = <T>(
-  config: Parameters<typeof apiClient>[0],
-): Promise<T> => {
+export const customInstance = <T>(config: AxiosRequestConfig): Promise<T> => {
   return apiClient(config).then(({ data }) => data);
 };
