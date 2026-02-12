@@ -86,6 +86,12 @@ export const SakeDetailDialog = ({
     const file = event.target.files?.[0];
     if (!file) return;
 
+    // MIMEタイプチェック                                                                                        
+    if (!file.type.startsWith("image/")) {                                                                       
+      alert("画像ファイルを選択してください");                                                                   
+      return;                                                                                                    
+    }   
+
     // ファイルサイズ制限（5MB）
     if (file.size > 5 * 1024 * 1024) {
       alert("ファイルサイズは5MB以下にしてください");
