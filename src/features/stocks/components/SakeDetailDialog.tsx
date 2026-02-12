@@ -123,7 +123,7 @@ export const SakeDetailDialog = ({
     } else {
       return;
     }
-  }, [sakeId]);
+  }, [sakeId, mode]);
 
   const handleSave = () => {
     // FIXME API実装
