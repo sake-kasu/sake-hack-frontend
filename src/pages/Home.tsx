@@ -7,7 +7,7 @@ export const Home = () => {
   return (
     <Container>
       <Typography variant="h4" component="h1" sx={{ mt: 4 }}>
-        {t("welcome")}
+        {t("welcomeおお")}
       </Typography>
       <Typography variant="body1" sx={{ mt: 2 }}>
         {t("home")}
