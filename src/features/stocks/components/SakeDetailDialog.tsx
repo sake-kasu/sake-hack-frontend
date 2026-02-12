@@ -95,8 +95,10 @@ export const SakeDetailDialog = ({
     // FileReaderでプレビュー表示
     const reader = new FileReader();
     reader.onload = (e) => {
-      const result = e.target?.result as string;
-      setForms({ ...forms, imageUrl: result });
+      const { result } = e.target ?? {};
+      if (typeof result === "string") {
+        setForms({ ...forms, imageUrl: result });
+      }
     };
     reader.readAsDataURL(file);
 
