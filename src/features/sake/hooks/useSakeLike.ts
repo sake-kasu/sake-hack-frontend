@@ -10,7 +10,7 @@ const getLikesFromStorage = (): Set<number> => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return new Set();
-    return new Set(JSON.parse(stored));
+    return new Set(JSON.parse(stored) as number[]);
   } catch (error) {
     console.error("Failed to load likes from localStorage:", error);
     return new Set();
