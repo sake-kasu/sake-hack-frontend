@@ -100,6 +100,9 @@ export const SakeDetailDialog = ({
         setForms({ ...forms, imageUrl: result });
       }
     };
+    reader.onerror = () => {
+    alert("画像の読み込みに失敗しました");
+    };
     reader.readAsDataURL(file);
 
     // input要素をリセット（同じファイルを再選択可能にする）
