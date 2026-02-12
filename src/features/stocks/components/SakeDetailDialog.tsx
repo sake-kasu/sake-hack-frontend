@@ -107,7 +107,7 @@ export const SakeDetailDialog = ({
       }
     };
     reader.onerror = () => {
-    alert("画像の読み込みに失敗しました");
+      alert("画像の読み込みに失敗しました");
     };
     reader.readAsDataURL(file);
 
