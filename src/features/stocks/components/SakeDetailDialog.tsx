@@ -1,4 +1,15 @@
-import { Box, Dialog, DialogContent, DialogTitle, Divider, IconButton, TextField, Button, Menu, MenuItem } from "@mui/material";
+import {
+  Box,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  IconButton,
+  TextField,
+  Button,
+  Menu,
+  MenuItem,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
@@ -51,7 +62,7 @@ export const SakeDetailDialog = ({
     price: "",
     imageUrl: null,
     memo: "",
-  })
+  });
 
   // 画像選択メニュー用
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -86,11 +97,11 @@ export const SakeDetailDialog = ({
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // MIMEタイプチェック                                                                                        
-    if (!file.type.startsWith("image/")) {                                                                       
-      alert("画像ファイルを選択してください");                                                                   
-      return;                                                                                                    
-    }   
+    // MIMEタイプチェック
+    if (!file.type.startsWith("image/")) {
+      alert("画像ファイルを選択してください");
+      return;
+    }
 
     // ファイルサイズ制限（5MB）
     if (file.size > 5 * 1024 * 1024) {
@@ -115,11 +126,11 @@ export const SakeDetailDialog = ({
     event.target.value = "";
   };
   // sakeIdを使って酒詳細を取得
-  useEffect(()=>{
-    if(mode === "edit" && sakeId){
+  useEffect(() => {
+    if (mode === "edit" && sakeId) {
       // APIの戻り値を詰める
-    } else if(mode === "new") {
-      setIsLoading(false)
+    } else if (mode === "new") {
+      setIsLoading(false);
     } else {
       return;
     }
@@ -203,11 +214,7 @@ export const SakeDetailDialog = ({
         </Box>
 
         {/* 画像選択メニュー */}
-        <Menu
-          anchorEl={anchorEl}
-          open={menuOpen}
-          onClose={handleMenuClose}
-        >
+        <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleMenuClose}>
           <MenuItem onClick={handleCaptureClick}>
             <CameraAltIcon sx={{ mr: 1 }} />
             写真を撮影

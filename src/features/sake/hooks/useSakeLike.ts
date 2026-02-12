@@ -117,7 +117,6 @@ export const useSakeLike = (sakeId: number, initialLikeCount: number) => {
       setIsProcessing(false);
       // TODO: API実装後、ここでapiCall()を呼び出す
     }, DEBOUNCE_DELAY);
-
   }, [sakeId]);
 
   return {
