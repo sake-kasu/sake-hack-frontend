@@ -10,7 +10,17 @@ const getLikesFromStorage = (): Set<number> => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return new Set();
-    return new Set(JSON.parse(stored) as number[]);
+    const parsed = JSON.parse(stored);
+    // 型安全チェック: 配列であり、すべてnumberであることを確認
+    if (
+      Array.isArray(parsed) &&
+      parsed.every((item) => typeof item === "number" && Number.isFinite(item))
+    ) {
+      return new Set(parsed as number[]);
+    } else {
+      // 型が不正な場合は空のSetを返す
+      return new Set();
+    }
   } catch (error) {
     console.error("Failed to load likes from localStorage:", error);
     return new Set();
@@ -22,7 +32,16 @@ const getLikesFromStorage = (): Set<number> => {
  */
 const saveLikesToStorage = (likes: Set<number>): void => {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify([...likes]));
+    const arr = [...likes];
+    // 型安全チェック: 配列であり、すべてnumberであることを確認
+    if (
+      Array.isArray(arr) &&
+      arr.every((item) => typeof item === "number" && Number.isFinite(item))
+    ) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+    } else {
+      console.error("Attempted to save invalid likes array to localStorage:", arr);
+    }
   } catch (error) {
     console.error("Failed to save likes to localStorage:", error);
   }
