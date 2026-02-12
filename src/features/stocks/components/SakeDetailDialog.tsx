@@ -106,11 +106,11 @@ export const SakeDetailDialog = ({
     event.target.value = "";
   };
   // sakeIdを使って酒詳細を取得
-  useEffect(() => {
-    if (mode == "edit" && sakeId) {
+  useEffect(()=>{
+    if(mode === "edit" && sakeId){
       // APIの戻り値を詰める
-    } else if (mode == "new") {
-      setIsLoading(false);
+    } else if(mode === "new") {
+      setIsLoading(false)
     } else {
       return;
     }
