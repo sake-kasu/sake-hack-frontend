@@ -22,6 +22,7 @@ import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import { useEffect, useState, useRef } from "react";
 import { CATEGORY_LABEL } from "@/config";
 import type { CategoryEnum } from "@/config";
+import { isValidInput } from "@/utils/validation";
 
 // 残容量の選択肢（0から100の間の25の倍数）
 const REMAINING_VOLUME_OPTIONS = [0, 25, 50, 75, 100];
@@ -157,16 +158,13 @@ export const SakeDetailDialog = ({
   const isFormValid = () => {
     return (
       forms.name.trim() !== "" &&
-      forms.phonetic.trim() !== "" &&
+      isValidInput(forms.name) &&
+      isValidInput(forms.phonetic) &&
       forms.category !== null &&
-      forms.abv !== "" &&
       Number(forms.abv) >= 0 &&
       Number(forms.abv) <= 100 &&
-      forms.purchaseVolume !== "" &&
       Number(forms.purchaseVolume) >= 0 &&
       Number(forms.purchaseVolume) <= 10000 &&
-      forms.remainingVolume !== "" &&
-      forms.price !== "" &&
       Number(forms.price) >= 0 &&
       Number(forms.price) <= 1000000
     );
@@ -205,8 +203,9 @@ export const SakeDetailDialog = ({
             }
             fullWidth
             required
+            error={!isValidInput(forms.name)}
             inputProps={{ maxLength: 100 }}
-            helperText={`${forms.name.length}/100`}
+            helperText={isValidInput(forms.name) ? `${forms.name.length}/100` : "不正な文字列の入力です"}
           />
         </Box>
 
@@ -219,9 +218,9 @@ export const SakeDetailDialog = ({
               setForms({ ...forms, phonetic: e.target.value })
             }
             fullWidth
-            required
             inputProps={{ maxLength: 100 }}
-            helperText={`${forms.phonetic.length}/100`}
+            helperText={isValidInput(forms.phonetic) ? `${forms.phonetic.length}/100` : "不正な文字列の入力です"}
+            error={!isValidInput(forms.phonetic)}
           />
         </Box>
 
@@ -357,7 +356,6 @@ export const SakeDetailDialog = ({
               setForms({ ...forms, abv: e.target.value })
             }
             fullWidth
-            required
             inputProps={{ min: 0, max: 100 }}
           />
         </Box>
@@ -372,14 +370,13 @@ export const SakeDetailDialog = ({
               setForms({ ...forms, purchaseVolume: e.target.value })
             }
             fullWidth
-            required
             inputProps={{ min: 0, max: 10000 }}
           />
         </Box>
 
         {/* 残容量 */}
         <Box sx={{ mb: 2 }}>
-          <FormControl fullWidth required>
+          <FormControl fullWidth>
             <InputLabel>残容量 (%)</InputLabel>
             <Select
               value={forms.remainingVolume}
@@ -407,7 +404,6 @@ export const SakeDetailDialog = ({
               setForms({ ...forms, price: e.target.value })
             }
             fullWidth
-            required
             inputProps={{ min: 0, max: 1000000 }}
           />
         </Box>
