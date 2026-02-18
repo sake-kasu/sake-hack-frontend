@@ -36,6 +36,7 @@ const DISALLOWED_PATTERN =
 
 /**
  * 入力値が許可された文字のみで構成されているか検証
+ * true: 有効な入力、false: 無効な入力
  */
 export const isValidInput = (value: string): boolean => {
   return ALLOWED_PATTERN.test(value);

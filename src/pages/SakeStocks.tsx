@@ -4,7 +4,7 @@ import { SakeListLayout } from "@/components/layouts/SakeListLayout";
 import { SakeDetailDialog } from "@/features/stocks/components/SakeDetailDialog";
 import { useSakeList } from "@/features/stocks/hooks/useSakeList";
 import type { Sake } from "@/types/sake";
-import { Fab } from "@mui/material";
+import { Fab, Typography } from "@mui/material";
 
 export const SakeStocks = () => {
   const { t } = useTranslation();
@@ -38,7 +38,9 @@ export const SakeStocks = () => {
         onCardClick={handleCardClick}
         floatingAction={
           <Fab color="primary" onClick={handleAddClick}>
-            +
+            <Typography fontSize={50} paddingBottom="10px">
+              +
+            </Typography>
           </Fab>
         }
       />
