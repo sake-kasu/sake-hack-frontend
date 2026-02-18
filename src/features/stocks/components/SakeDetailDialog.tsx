@@ -9,6 +9,9 @@ import {
   Button,
   Menu,
   MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
@@ -17,7 +20,11 @@ import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import { useEffect, useState, useRef } from "react";
+import { CATEGORY_LABEL } from "@/config";
 import type { CategoryEnum } from "@/config";
+
+// 残容量の選択肢（0から100の間の25の倍数）
+const REMAINING_VOLUME_OPTIONS = [0, 25, 50, 75, 100];
 
 export type SakeDetailForm = {
   id: number | null;
@@ -58,7 +65,7 @@ export const SakeDetailDialog = ({
     originRegion: "",
     abv: "",
     purchaseVolume: "",
-    remainingVolume: "",
+    remainingVolume: "100",
     price: "",
     imageUrl: null,
     memo: "",
@@ -146,6 +153,25 @@ export const SakeDetailDialog = ({
     onClose();
   };
 
+  // 必須項目のバリデーション
+  const isFormValid = () => {
+    return (
+      forms.name.trim() !== "" &&
+      forms.phonetic.trim() !== "" &&
+      forms.category !== null &&
+      forms.abv !== "" &&
+      Number(forms.abv) >= 0 &&
+      Number(forms.abv) <= 100 &&
+      forms.purchaseVolume !== "" &&
+      Number(forms.purchaseVolume) >= 0 &&
+      Number(forms.purchaseVolume) <= 10000 &&
+      forms.remainingVolume !== "" &&
+      forms.price !== "" &&
+      Number(forms.price) >= 0 &&
+      Number(forms.price) <= 1000000
+    );
+  };
+
   if (isLoading) {
     return <>読み込み中</>;
   }
@@ -153,15 +179,10 @@ export const SakeDetailDialog = ({
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <TextField
-            label="酒の名前"
-            value={forms.name}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setForms({ ...forms, name: e.target.value })
-            }
-            fullWidth
-          />
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <Box component="span" sx={{ fontWeight: "bold" }}>
+            {mode === "edit" ? "酒の詳細を編集" : "新しい酒を追加"}
+          </Box>
           <IconButton
             edge="end"
             color="inherit"
@@ -174,6 +195,36 @@ export const SakeDetailDialog = ({
       </DialogTitle>
 
       <DialogContent dividers>
+        {/* 名前 */}
+        <Box sx={{ mb: 2 }}>
+          <TextField
+            label="名前"
+            value={forms.name}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setForms({ ...forms, name: e.target.value })
+            }
+            fullWidth
+            required
+            inputProps={{ maxLength: 100 }}
+            helperText={`${forms.name.length}/100`}
+          />
+        </Box>
+
+        {/* ふりがな */}
+        <Box sx={{ mb: 2 }}>
+          <TextField
+            label="ふりがな"
+            value={forms.phonetic}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setForms({ ...forms, phonetic: e.target.value })
+            }
+            fullWidth
+            required
+            inputProps={{ maxLength: 100 }}
+            helperText={`${forms.phonetic.length}/100`}
+          />
+        </Box>
+
         {/* 画像表示領域（クリックでメニュー表示） */}
         <Box
           onClick={handleImageAreaClick}
@@ -250,22 +301,44 @@ export const SakeDetailDialog = ({
           onChange={handleImageChange}
         />
 
-        {/* 種類 */}
+        {/* 大分類 */}
+        <Box sx={{ mb: 2 }}>
+          <FormControl fullWidth required>
+            <InputLabel>大分類</InputLabel>
+            <Select
+              value={forms.category ?? ""}
+              label="大分類"
+              onChange={(e) =>
+                setForms({ ...forms, category: e.target.value as CategoryEnum })
+              }
+            >
+              {Object.entries(CATEGORY_LABEL).map(([key, label]) => (
+                <MenuItem key={key} value={key}>
+                  {label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
+        {/* 小分類 */}
         <Box sx={{ mb: 2 }}>
           <TextField
-            label="種類"
+            label="小分類"
             value={forms.kind}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setForms({ ...forms, kind: e.target.value })
             }
             fullWidth
+            inputProps={{ maxLength: 100 }}
+            helperText={`${forms.kind.length}/100`}
           />
         </Box>
 
-        {/* 酒造 */}
+        {/* 産地 */}
         <Box sx={{ mb: 2 }}>
           <TextField
-            label="酒造名"
+            label="産地"
             value={forms.originRegion}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setForms({ ...forms, originRegion: e.target.value })
@@ -284,13 +357,65 @@ export const SakeDetailDialog = ({
               setForms({ ...forms, abv: e.target.value })
             }
             fullWidth
+            required
+            inputProps={{ min: 0, max: 100 }}
           />
         </Box>
 
-        {/* メモ */}
+        {/* 購入時容量 */}
         <Box sx={{ mb: 2 }}>
           <TextField
-            label="メモ"
+            label="購入時容量 (mL)"
+            type="number"
+            value={forms.purchaseVolume}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setForms({ ...forms, purchaseVolume: e.target.value })
+            }
+            fullWidth
+            required
+            inputProps={{ min: 0, max: 10000 }}
+          />
+        </Box>
+
+        {/* 残容量 */}
+        <Box sx={{ mb: 2 }}>
+          <FormControl fullWidth required>
+            <InputLabel>残容量 (%)</InputLabel>
+            <Select
+              value={forms.remainingVolume}
+              label="残容量 (%)"
+              onChange={(e) =>
+                setForms({ ...forms, remainingVolume: e.target.value })
+              }
+            >
+              {REMAINING_VOLUME_OPTIONS.map((volume) => (
+                <MenuItem key={volume} value={volume.toString()}>
+                  {volume}%
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
+        {/* 購入時価格 */}
+        <Box sx={{ mb: 2 }}>
+          <TextField
+            label="購入時価格 (円)"
+            type="number"
+            value={forms.price}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setForms({ ...forms, price: e.target.value })
+            }
+            fullWidth
+            required
+            inputProps={{ min: 0, max: 1000000 }}
+          />
+        </Box>
+
+        {/* 自由記述 */}
+        <Box sx={{ mb: 2 }}>
+          <TextField
+            label="自由記述"
             value={forms.memo ?? ""}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setForms({ ...forms, memo: e.target.value })
@@ -298,25 +423,29 @@ export const SakeDetailDialog = ({
             fullWidth
             multiline
             minRows={3}
+            inputProps={{ maxLength: 500 }}
+            helperText={`${(forms.memo ?? "").length}/500`}
           />
         </Box>
 
         <Divider sx={{ my: 2 }} />
 
-        {/* 日付表示は省略 or 別途管理が必要 */}
+        {/* ボタン */}
+        <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
+          <Button onClick={onClose} startIcon={<CloseIcon />} color="inherit">
+            キャンセル
+          </Button>
 
-        <Button onClick={onClose} startIcon={<CloseIcon />} color="inherit">
-          キャンセル
-        </Button>
-
-        <Button
-          onClick={handleSave}
-          startIcon={<SaveIcon />}
-          variant="contained"
-          color="primary"
-        >
-          {mode === "edit" ? "更新" : "保存"}
-        </Button>
+          <Button
+            onClick={handleSave}
+            startIcon={<SaveIcon />}
+            variant="contained"
+            color="primary"
+            disabled={!isFormValid()}
+          >
+            {mode === "edit" ? "更新" : "保存"}
+          </Button>
+        </Box>
       </DialogContent>
     </Dialog>
   );
