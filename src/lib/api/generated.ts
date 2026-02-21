@@ -7,38 +7,11 @@
  * OpenAPI spec version: 1.0.0
  */
 import { customInstance } from "../axios/client";
-export type SakeCategory = (typeof SakeCategory)[keyof typeof SakeCategory];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SakeCategory = {
-  JAPANESE_SAKE: "JAPANESE_SAKE",
-  WHISKY: "WHISKY",
-  WINE: "WINE",
-  BEER: "BEER",
-  SHOCHU: "SHOCHU",
-  AWAMORI: "AWAMORI",
-  RIQUEUR: "RIQUEUR",
-  SPIRITS: "SPIRITS",
-  OTHER: "OTHER",
-} as const;
-
-export interface Sake {
-  /** 酒ID */
+export interface SakeKind {
+  /** 酒の小分類ID */
   id: number;
-  category: SakeCategory;
-  /** 酒名 */
+  /** 酒の小分類の名前 */
   name: string;
-  /** 画像URL formatは実装次第 */
-  imagePreview: string;
-}
-
-export interface SakeListMeta {
-  /** 総件数 */
-  total: number;
-  /** スキップした件数 */
-  offset: number;
-  /** 取得した件数 */
-  limit: number;
 }
 
 export interface APIError {
@@ -48,10 +21,9 @@ export interface APIError {
   message: string;
 }
 
-export interface ListSakesResponse {
-  /** 酒のリスト */
-  data?: Sake[];
-  meta?: SakeListMeta;
+export interface ListKindsResponse {
+  /** 酒の種類一覧 */
+  data?: SakeKind[];
   errors?: APIError[];
 }
 
@@ -69,13 +41,6 @@ export interface ErrorResponse {
   data?: ErrorResponseData;
   /** エラー情報の配列 */
   errors?: APIError[];
-}
-
-export interface SakeKind {
-  /** 酒の小分類ID */
-  id: number;
-  /** 酒の小分類の名前 */
-  name: string;
 }
 
 export interface Brewery {
@@ -102,11 +67,10 @@ export interface Brewery {
   longitude?: number | null;
 }
 
-export interface SakeName {
-  /** 漢字・英名の名前 */
-  name: string;
-  /** 読み方 */
-  phonetic: string;
+export interface ListBreweriesResponse {
+  /** 酒造一覧 */
+  data?: Brewery[];
+  errors?: APIError[];
 }
 
 export interface DrinkStyle {
@@ -119,6 +83,62 @@ export interface DrinkStyle {
    * @nullable
    */
   description?: string | null;
+}
+
+export interface ListDrinkStylesResponse {
+  /** 飲み方一覧 */
+  data?: DrinkStyle[];
+  errors?: APIError[];
+}
+
+export type SakeCategory = (typeof SakeCategory)[keyof typeof SakeCategory];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SakeCategory = {
+  JAPANESE_SAKE: "JAPANESE_SAKE",
+  WHISKY: "WHISKY",
+  WINE: "WINE",
+  BEER: "BEER",
+  SHOCHU: "SHOCHU",
+  AWAMORI: "AWAMORI",
+  RIQUEUR: "RIQUEUR",
+  SPIRITS: "SPIRITS",
+  FRUIT_WINE: "FRUIT_WINE",
+  NON_ALCOHOL: "NON_ALCOHOL",
+  OTHER: "OTHER",
+} as const;
+
+export interface Sake {
+  /** 酒ID */
+  id: number;
+  category: SakeCategory;
+  /** 酒名 */
+  name: string;
+  /** 画像URL formatは実装次第 */
+  imagePreview: string;
+}
+
+export interface SakeListMeta {
+  /** 総件数 */
+  total: number;
+  /** スキップした件数 */
+  offset: number;
+  /** 取得した件数 */
+  limit: number;
+}
+
+export interface ListSakesResponse {
+  /** 酒のリスト */
+  data?: Sake[];
+  meta?: SakeListMeta;
+  errors?: APIError[];
+}
+
+export interface SakeName {
+  /** 漢字・英名の名前 */
+  name: string;
+  /** 読み方 */
+  phonetic: string;
 }
 
 export interface SakeDetail {
@@ -238,6 +258,20 @@ export type InternalServerErrorResponse = ErrorResponse;
  */
 export type NotFoundResponse = ErrorResponse;
 
+export type ListBreweriesParams = {
+  /**
+   * 酒造名で部分一致検索
+   * @maxLength 100
+   */
+  keyword?: string;
+  /**
+   * 取得件数上限
+   * @minimum 1
+   * @maximum 100
+   */
+  limit?: number;
+};
+
 export type ListSakesParams = {
   /**
    * スキップする件数
@@ -287,6 +321,37 @@ export type ListStocksParams = {
 };
 
 export const getSakeHackBackendAPI = () => {
+  /**
+   * 酒の種類(小分類)の一覧を取得します
+   * @summary 酒の種類一覧取得
+   */
+  const listKinds = () => {
+    return customInstance<ListKindsResponse>({ url: `/kinds`, method: "GET" });
+  };
+
+  /**
+   * 酒造の一覧を検索条件付きで取得します
+   * @summary 酒造一覧取得
+   */
+  const listBreweries = (params?: ListBreweriesParams) => {
+    return customInstance<ListBreweriesResponse>({
+      url: `/breweries`,
+      method: "GET",
+      params,
+    });
+  };
+
+  /**
+   * 飲み方の一覧を取得します
+   * @summary 飲み方一覧取得
+   */
+  const listDrinkStyles = () => {
+    return customInstance<ListDrinkStylesResponse>({
+      url: `/drink-styles`,
+      method: "GET",
+    });
+  };
+
   /**
    * 酒の一覧をページネーション付きで取得します
    * @summary 酒一覧取得
@@ -393,6 +458,9 @@ DBへの副作用はありません。アップロード成功後にPATCH /stock
   };
 
   return {
+    listKinds,
+    listBreweries,
+    listDrinkStyles,
     listSakes,
     getSakeDetail,
     listStocks,
@@ -404,6 +472,17 @@ DBへの副作用はありません。アップロード成功後にPATCH /stock
     createStockUploadUrl,
   };
 };
+export type ListKindsResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getSakeHackBackendAPI>["listKinds"]>>
+>;
+export type ListBreweriesResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getSakeHackBackendAPI>["listBreweries"]>>
+>;
+export type ListDrinkStylesResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getSakeHackBackendAPI>["listDrinkStyles"]>
+  >
+>;
 export type ListSakesResult = NonNullable<
   Awaited<ReturnType<ReturnType<typeof getSakeHackBackendAPI>["listSakes"]>>
 >;
