@@ -1,38 +1,44 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { SakeListLayout } from "@/components/layouts/SakeListLayout";
+import { StockListLayout } from "@/features/stocks/components/StockListLayout";
 import { SakeDetailDialog } from "@/features/stocks/components/SakeDetailDialog";
-import { useSakeList } from "@/features/stocks/hooks/useSakeList";
-import type { Sake } from "@/types/sake";
+import { useStockList } from "@/features/stocks/hooks/useStockList";
+import type { Sake } from "@/lib/api/generated";
 import { Fab, Typography } from "@mui/material";
 
 export const SakeStocks = () => {
   const { t } = useTranslation();
-  const { sakes, isLoading, error } = useSakeList();
-  const [selectedSake, setSelectedSake] = useState<Sake | null>(null); // ここ別にidとかだけで良くね クリックしたら詳細API叩くし sakeとsakeDetailが欲しい
-  // sakeに必要なのはidとsakeNameと大分類とimageurlくらいでは？
+  const { stocks, isLoading, error, refetch } = useStockList();
+  const [selectedStockId, setSelectedStockId] = useState<number | undefined>(
+    undefined,
+  );
   const [open, setOpen] = useState(false);
 
-  const handleCardClick = (sake: Sake) => {
-    setSelectedSake(sake);
+  const handleCardClick = (stock: Sake) => {
+    setSelectedStockId(stock.id);
     setOpen(true);
   };
 
   const handleAddClick = () => {
-    setSelectedSake(null);
+    setSelectedStockId(undefined);
     setOpen(true);
   };
 
   const handleDialogClose = () => {
-    setSelectedSake(null);
+    setSelectedStockId(undefined);
     setOpen(false);
+  };
+
+  const handleSaveSuccess = () => {
+    handleDialogClose();
+    refetch();
   };
 
   return (
     <>
-      <SakeListLayout
+      <StockListLayout
         title={t("sake.list.title")}
-        sakes={sakes}
+        stocks={stocks}
         isLoading={isLoading}
         error={error}
         onCardClick={handleCardClick}
@@ -45,10 +51,11 @@ export const SakeStocks = () => {
         }
       />
       <SakeDetailDialog
-        sakeId={selectedSake?.id}
+        stockId={selectedStockId}
         open={open}
-        mode={selectedSake ? "edit" : "new"}
+        mode={selectedStockId !== undefined ? "edit" : "new"}
         onClose={handleDialogClose}
+        onSaveSuccess={handleSaveSuccess}
       />
     </>
   );
