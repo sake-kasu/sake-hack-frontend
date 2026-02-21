@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { StockListLayout } from "@/features/stocks/components/StockListLayout";
 import { StockDetailDialog } from "@/features/stocks/components/StockDetailDialog";
 import { useStockList } from "@/features/stocks/hooks/useStockList";
-import type { Sake } from "@/lib/api/generated";
+import type { Sake } from "@/lib/api/generated/models";
 import { Fab, Typography } from "@mui/material";
 
 export const SakeStocks = () => {

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { SakeListLayout } from "@/components/layouts/SakeListLayout";
 import { SakeDetailDialog } from "@/features/sake/components/SakeDetailDialog";
 import { useSakeList } from "@/features/sake/hooks/useSakeList";
-import type { Sake } from "@/lib/api/generated";
+import type { Sake } from "@/lib/api/generated/models";
 
 export const SakeList = () => {
   const { t } = useTranslation();
