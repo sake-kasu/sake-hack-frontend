@@ -35,6 +35,10 @@ export type SakeDetail = {
   drinkStyles: DrinkStyle[];
   /** 購入時価格 */
   price: number;
+  /** いいね数 */
+  likeCount: number;
+  /** リクエストユーザーがいいね済みかどうか */
+  isLiked: boolean;
   /** 表示用の画像URL */
   imageUrl?: string;
   /** 作成日時 */

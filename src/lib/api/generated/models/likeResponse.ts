@@ -6,16 +6,8 @@
 
  * OpenAPI spec version: 1.0.0
  */
-import type { SakeCategory } from "./sakeCategory";
 
-export type Sake = {
-  /** 酒ID */
-  id: number;
-  category: SakeCategory;
-  /** 酒名 */
-  name: string;
-  /** 画像URL formatは実装次第 */
-  imagePreview: string;
+export type LikeResponse = {
   /** いいね数 */
   likeCount: number;
   /** リクエストユーザーがいいね済みかどうか */

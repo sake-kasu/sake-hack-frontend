@@ -16,6 +16,7 @@ export * from "./drinkStyle";
 export * from "./errorResponse";
 export * from "./errorResponseData";
 export * from "./internalServerErrorResponse";
+export * from "./likeResponse";
 export * from "./listBreweriesParams";
 export * from "./listBreweriesResponse";
 export * from "./listDrinkStylesResponse";
