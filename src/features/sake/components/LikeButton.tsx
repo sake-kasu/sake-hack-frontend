@@ -1,5 +1,5 @@
-import StarIcon from "@mui/icons-material/Star";
-import StarBorderIcon from "@mui/icons-material/StarBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { IconButton, Typography, Box } from "@mui/material";
 import type { MouseEvent } from "react";
 
@@ -25,9 +25,9 @@ export const LikeButton = ({
     <Box sx={{ display: "flex", alignItems: "center" }}>
       <IconButton onClick={handleClick} size={size} aria-label="いいね">
         {isLiked ? (
-          <StarIcon color="warning" fontSize={size} />
+          <FavoriteIcon fontSize={size} sx={{ color: "#C75C2E" }} />
         ) : (
-          <StarBorderIcon color="action" fontSize={size} />
+          <FavoriteBorderIcon color="action" fontSize={size} />
         )}
       </IconButton>
       <Typography variant="body2" color="text.secondary">
