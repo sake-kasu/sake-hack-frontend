@@ -26,23 +26,32 @@ export const AppHeader = ({ onMenuClick, showMenuButton }: AppHeaderProps) => {
       <Toolbar>
         {showMenuButton && (
           <IconButton
-            color="inherit"
             aria-label={t("layout.openDrawer")}
             edge="start"
             onClick={onMenuClick}
-            sx={{ mr: 2 }}
+            sx={{ mr: 2, color: "text.primary" }}
           >
             <MenuIcon />
           </IconButton>
         )}
-        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+        <Typography
+          variant="h6"
+          noWrap
+          component="div"
+          sx={{
+            flexGrow: 1,
+            fontWeight: 700,
+            letterSpacing: "0.04em",
+            color: "text.primary",
+          }}
+        >
           {t("layout.appTitle")}
         </Typography>
         <Box>
           <IconButton
-            color="inherit"
             aria-label={t("layout.changeLanguage")}
             onClick={handleLanguageToggle}
+            sx={{ color: "text.secondary" }}
           >
             <LanguageIcon />
           </IconButton>
