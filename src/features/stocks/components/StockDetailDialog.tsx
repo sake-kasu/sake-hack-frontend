@@ -1,5 +1,6 @@
 import {
   Alert,
+  Autocomplete,
   Box,
   Button,
   CircularProgress,
@@ -16,18 +17,25 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import SaveIcon from "@mui/icons-material/Save";
-import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
-import DeleteIcon from "@mui/icons-material/Delete";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import CloseIcon from "@mui/icons-material/Close";
+import DeleteIcon from "@mui/icons-material/Delete";
+import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
+import SaveIcon from "@mui/icons-material/Save";
 import { useEffect, useRef, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { getCategoryLabel } from "@/features/stocks/constants";
+import type {
+  Brewery,
+  CreateSakeRequest,
+  DrinkStyle,
+  SakeDetail,
+  SakeKind,
+} from "@/lib/api/generated";
 import { SakeCategory } from "@/lib/api/generated";
-import type { CreateSakeRequest, SakeDetail } from "@/lib/api/generated";
+import { useMasterData } from "@/features/stocks/hooks/useMasterData";
 import { useStockDetail } from "@/features/stocks/hooks/useStockDetail";
 import { useStockMutation } from "@/features/stocks/hooks/useStockMutation";
 import {
@@ -38,6 +46,8 @@ import {
 
 // 残容量の選択肢（0から100の間の25の倍数）
 const REMAINING_VOLUME_OPTIONS = [0, 25, 50, 75, 100];
+
+const BREWERY_SEARCH_DEBOUNCE_MS = 300;
 
 const DEFAULT_VALUES: StockFormValues = {
   name: "",
@@ -78,7 +88,7 @@ const detailToFormValues = (detail: SakeDetail): StockFormValues => {
   };
 };
 
-type SakeDetailDialogProps = {
+type StockDetailDialogProps = {
   stockId: number | undefined;
   open: boolean;
   mode: "new" | "edit";
@@ -86,13 +96,13 @@ type SakeDetailDialogProps = {
   onSaveSuccess: () => void;
 };
 
-export const SakeDetailDialog = ({
+export const StockDetailDialog = ({
   stockId,
   open,
   mode,
   onClose,
   onSaveSuccess,
-}: SakeDetailDialogProps) => {
+}: StockDetailDialogProps) => {
   const {
     detail,
     isLoading: isDetailLoading,
@@ -109,14 +119,29 @@ export const SakeDetailDialog = ({
   } = useStockMutation(onSaveSuccess);
 
   const {
+    kinds,
+    breweries,
+    drinkStyles: drinkStyleOptions,
+    searchBreweries,
+  } = useMasterData();
+
+  const {
     control,
     handleSubmit,
     reset: resetForm,
+    setValue,
   } = useForm<StockFormValues>({
     resolver: yupResolver(stockFormSchema),
     defaultValues: DEFAULT_VALUES,
     mode: "onBlur",
   });
+
+  // マスタデータ選択状態（react-hook-form の外で管理）
+  const [selectedKind, setSelectedKind] = useState<SakeKind | null>(null);
+  const [selectedBrewery, setSelectedBrewery] = useState<Brewery | null>(null);
+  const [selectedDrinkStyles, setSelectedDrinkStyles] = useState<DrinkStyle[]>(
+    [],
+  );
 
   // 画像（react-hook-form の外で管理）
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -128,12 +153,20 @@ export const SakeDetailDialog = ({
   const captureInputRef = useRef<HTMLInputElement>(null);
   const selectInputRef = useRef<HTMLInputElement>(null);
 
+  // 酒造検索デバウンス用
+  const brewerySearchTimerRef = useRef<
+    ReturnType<typeof setTimeout> | undefined
+  >(undefined);
+
   // ダイアログが開いた時の初期化
   useEffect(() => {
     if (!open) return;
     if (mode === "new") {
       resetDetail();
       resetForm(DEFAULT_VALUES);
+      setSelectedKind(null);
+      setSelectedBrewery(null);
+      setSelectedDrinkStyles([]);
       setImageFile(null);
       setImagePreviewUrl(null);
     } else if (mode === "edit" && stockId !== undefined) {
@@ -145,6 +178,9 @@ export const SakeDetailDialog = ({
   useEffect(() => {
     if (detail && mode === "edit") {
       resetForm(detailToFormValues(detail));
+      setSelectedKind(detail.kind);
+      setSelectedBrewery(detail.brewery);
+      setSelectedDrinkStyles(detail.drinkStyles);
       setImageFile(null);
       setImagePreviewUrl(detail.imageUrl ?? null);
     }
@@ -205,6 +241,14 @@ export const SakeDetailDialog = ({
     event.target.value = "";
   };
 
+  // 酒造検索（デバウンス付き）
+  const handleBreweryInputChange = (inputValue: string) => {
+    clearTimeout(brewerySearchTimerRef.current);
+    brewerySearchTimerRef.current = setTimeout(() => {
+      searchBreweries(inputValue);
+    }, BREWERY_SEARCH_DEBOUNCE_MS);
+  };
+
   const buildRequest = (data: StockFormValues): CreateSakeRequest => {
     const { category, abv, purchaseVolume, price } = data;
 
@@ -220,11 +264,11 @@ export const SakeDetailDialog = ({
     return {
       category,
       kind: {
-        id: detail?.kind.id ?? 0,
+        id: selectedKind?.id ?? detail?.kind.id ?? 0,
         name: data.kindName,
       },
       brewery: {
-        id: detail?.brewery.id ?? 0,
+        id: selectedBrewery?.id ?? detail?.brewery.id ?? 0,
         name: data.breweryName,
         originCountry: data.originCountry,
         originRegion: data.originRegion || null,
@@ -237,7 +281,7 @@ export const SakeDetailDialog = ({
       purchaseVolume,
       remainingVolume: (purchaseVolume * Number(data.remainingVolume)) / 100,
       memo: data.memo || null,
-      drinkStyles: detail?.drinkStyles ?? [],
+      drinkStyles: selectedDrinkStyles,
       price,
     };
   };
@@ -280,7 +324,7 @@ export const SakeDetailDialog = ({
           }}
         >
           <Box component="span" sx={{ fontWeight: "bold" }}>
-            {mode === "edit" ? "酒の詳細を編集" : "新しい酒を追加"}
+            {mode === "edit" ? "在庫の詳細を編集" : "新しい在庫を追加"}
           </Box>
           <IconButton
             edge="end"
@@ -442,42 +486,84 @@ export const SakeDetailDialog = ({
           />
         </Box>
 
-        {/* 小分類（暫定: テキスト入力。マスタデータAPI実装後にSelect/Autocompleteに変更） */}
+        {/* 小分類 */}
         <Box sx={{ mb: 2 }}>
           <Controller
             name="kindName"
             control={control}
             render={({ field, fieldState }) => (
-              <TextField
-                {...field}
-                label="小分類"
-                fullWidth
-                required
-                error={!!fieldState.error}
-                inputProps={{ maxLength: 100 }}
-                helperText={
-                  fieldState.error?.message ??
-                  `${(field.value ?? "").length}/100`
+              <Autocomplete
+                freeSolo
+                options={kinds}
+                getOptionLabel={(option) =>
+                  typeof option === "string" ? option : option.name
                 }
+                inputValue={field.value ?? ""}
+                onInputChange={(_event, newValue) => {
+                  field.onChange(newValue);
+                }}
+                onChange={(_event, newValue) => {
+                  if (newValue !== null && typeof newValue !== "string") {
+                    setSelectedKind(newValue);
+                    field.onChange(newValue.name);
+                  } else {
+                    setSelectedKind(null);
+                  }
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="小分類"
+                    required
+                    error={!!fieldState.error}
+                    helperText={
+                      fieldState.error?.message ??
+                      `${(field.value ?? "").length}/100`
+                    }
+                  />
+                )}
               />
             )}
           />
         </Box>
 
-        {/* 酒造名（暫定: テキスト入力。マスタデータAPI実装後にAutocompleteに変更） */}
+        {/* 酒造名 */}
         <Box sx={{ mb: 2 }}>
           <Controller
             name="breweryName"
             control={control}
             render={({ field, fieldState }) => (
-              <TextField
-                {...field}
-                label="酒造名"
-                fullWidth
-                required
-                error={!!fieldState.error}
-                inputProps={{ maxLength: 100 }}
-                helperText={fieldState.error?.message}
+              <Autocomplete
+                freeSolo
+                options={breweries}
+                getOptionLabel={(option) =>
+                  typeof option === "string" ? option : option.name
+                }
+                filterOptions={(x) => x}
+                inputValue={field.value ?? ""}
+                onInputChange={(_event, newValue) => {
+                  field.onChange(newValue);
+                  handleBreweryInputChange(newValue);
+                }}
+                onChange={(_event, newValue) => {
+                  if (newValue !== null && typeof newValue !== "string") {
+                    setSelectedBrewery(newValue);
+                    field.onChange(newValue.name);
+                    setValue("originCountry", newValue.originCountry);
+                    setValue("originRegion", newValue.originRegion ?? "");
+                  } else {
+                    setSelectedBrewery(null);
+                  }
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="酒造名"
+                    required
+                    error={!!fieldState.error}
+                    helperText={fieldState.error?.message}
+                  />
+                )}
               />
             )}
           />
@@ -607,6 +693,23 @@ export const SakeDetailDialog = ({
                 inputProps={{ min: 0, max: 1000000 }}
                 helperText={fieldState.error?.message}
               />
+            )}
+          />
+        </Box>
+
+        {/* おすすめの飲み方 */}
+        <Box sx={{ mb: 2 }}>
+          <Autocomplete
+            multiple
+            options={drinkStyleOptions}
+            getOptionLabel={(option) => option.name}
+            isOptionEqualToValue={(option, value) => option.id === value.id}
+            value={selectedDrinkStyles}
+            onChange={(_event, newValue) => {
+              setSelectedDrinkStyles(newValue);
+            }}
+            renderInput={(params) => (
+              <TextField {...params} label="おすすめの飲み方" />
             )}
           />
         </Box>
