@@ -37,5 +37,24 @@ export const getCategoryLabel = (category: string): string => {
   return CATEGORY_LABEL_MAP.get(category) ?? category;
 };
 
+// カテゴリカラー
+const CATEGORY_COLOR: Record<string, string> = {
+  [CATEGORY_ENUM.JAPANESE_SAKE]: "#2B4C7E",
+  [CATEGORY_ENUM.WHISKY]: "#8B6914",
+  [CATEGORY_ENUM.WINE]: "#722F37",
+  [CATEGORY_ENUM.BEER]: "#DAA520",
+  [CATEGORY_ENUM.SHOCHU]: "#5B7065",
+  [CATEGORY_ENUM.AWAMORI]: "#5B7065",
+  [CATEGORY_ENUM.RIQUEUR]: "#8B5E83",
+  [CATEGORY_ENUM.SPIRITS]: "#6B6B6B",
+  [CATEGORY_ENUM.FRUIT_WINE]: "#A0522D",
+  [CATEGORY_ENUM.NON_ALCOHOL]: "#8FA9B8",
+  [CATEGORY_ENUM.OTHER]: "#6B6B6B",
+};
+
+export const getCategoryColor = (category: string): string => {
+  return CATEGORY_COLOR[category] ?? "#6B6B6B";
+};
+
 // 酒残量の選択肢
 export const remainingVolumeOptions = ["0", "25", "50", "75", "100"];
