@@ -54,9 +54,20 @@ export const NavigationMenu = ({
                   handleNavigate(item.path);
                 }}
                 sx={{
-                  minHeight: 48,
+                  minHeight: 44,
                   justifyContent: mini ? "center" : "initial",
                   px: 2.5,
+                  borderLeft: isActive ? "3px solid" : "3px solid transparent",
+                  borderLeftColor: isActive ? "secondary.main" : "transparent",
+                  "&:hover": {
+                    backgroundColor: "rgba(0,0,0,0.03)",
+                  },
+                  "&.Mui-selected": {
+                    backgroundColor: "rgba(184,134,11,0.06)",
+                    "&:hover": {
+                      backgroundColor: "rgba(184,134,11,0.10)",
+                    },
+                  },
                 }}
               >
                 <ListItemIcon
@@ -64,6 +75,7 @@ export const NavigationMenu = ({
                     minWidth: 0,
                     mr: mini ? 0 : 3,
                     justifyContent: "center",
+                    color: isActive ? "secondary.main" : "text.secondary",
                   }}
                 >
                   {item.icon}
@@ -71,7 +83,11 @@ export const NavigationMenu = ({
                 {!mini && (
                   <ListItemText
                     primary={t(item.labelKey)}
-                    primaryTypographyProps={{ noWrap: true }}
+                    primaryTypographyProps={{
+                      noWrap: true,
+                      fontWeight: isActive ? 500 : 400,
+                      fontSize: "0.875rem",
+                    }}
                   />
                 )}
               </ListItemButton>
