@@ -65,5 +65,5 @@ deps-clean: ## 依存関係をクリーンインストール
 
 # API開発
 api-generate: ## OpenAPI仕様からAPIクライアントを自動生成
-	@echo "🤖 OpenAPI仕様からAPIクライアントを生成しています..."
-	@bun orval --config orval.config.ts
+	@./scripts/generate-api.sh $(BRANCH)
+	@echo "finished."
