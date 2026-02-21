@@ -8,18 +8,21 @@ import {
   Typography,
 } from "@mui/material";
 import type { Sake } from "@/lib/api/generated/models";
+import { LikeButton } from "@/features/sake/components/LikeButton";
 import { getCategoryLabel } from "@/features/stocks/constants";
 
 type SakeDetailDialogProps = {
   sake: Sake | null;
   open: boolean;
   onClose: () => void;
+  onLikeToggle: () => void;
 };
 
 export const SakeDetailDialog = ({
   sake,
   open,
   onClose,
+  onLikeToggle,
 }: SakeDetailDialogProps) => {
   if (!sake) {
     return null;
@@ -32,6 +35,12 @@ export const SakeDetailDialog = ({
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             {sake.name}
           </Typography>
+          <LikeButton
+            isLiked={sake.isLiked}
+            likeCount={sake.likeCount}
+            onToggle={onLikeToggle}
+            size="small"
+          />
           <IconButton
             edge="end"
             color="inherit"
