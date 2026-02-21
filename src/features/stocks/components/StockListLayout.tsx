@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import { StockCard } from "@/features/stocks/components/StockCard";
-import type { Sake } from "@/lib/api/generated";
+import type { Sake } from "@/lib/api/generated/models";
 import { useTranslation } from "react-i18next";
 
 type StockListLayoutProps = {

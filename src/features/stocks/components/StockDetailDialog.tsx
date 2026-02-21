@@ -33,8 +33,8 @@ import type {
   DrinkStyle,
   SakeDetail,
   SakeKind,
-} from "@/lib/api/generated";
-import { SakeCategory } from "@/lib/api/generated";
+} from "@/lib/api/generated/models";
+import { SakeCategory } from "@/lib/api/generated/models";
 import { useMasterData } from "@/features/stocks/hooks/useMasterData";
 import { useStockDetail } from "@/features/stocks/hooks/useStockDetail";
 import { useStockMutation } from "@/features/stocks/hooks/useStockMutation";

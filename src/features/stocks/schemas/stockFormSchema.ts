@@ -1,4 +1,4 @@
-import { SakeCategory } from "@/lib/api/generated";
+import { SakeCategory } from "@/lib/api/generated/models";
 import { isValidInput } from "@/utils/validation";
 import * as yup from "yup";
 
