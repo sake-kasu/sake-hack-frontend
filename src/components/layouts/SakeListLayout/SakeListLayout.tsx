@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import { SakeCard } from "@/components/layouts/SakeListLayout/SakeCard";
-import type { Sake } from "@/lib/api/generated";
+import type { Sake } from "@/lib/api/generated/models";
 import { useTranslation } from "react-i18next";
 
 type SakeListLayoutProps = {

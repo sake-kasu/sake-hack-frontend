@@ -7,7 +7,7 @@ import {
   IconButton,
   Typography,
 } from "@mui/material";
-import type { Sake } from "@/lib/api/generated";
+import type { Sake } from "@/lib/api/generated/models";
 import { getCategoryLabel } from "@/features/stocks/constants";
 
 type SakeDetailDialogProps = {
