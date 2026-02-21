@@ -1,5 +1,5 @@
-import { getSakeHackBackendAPI } from "@/lib/api/generated";
-import type { Sake } from "@/lib/api/generated";
+import { getSakes } from "@/lib/api/generated/sakes/sakes";
+import type { Sake } from "@/lib/api/generated/models";
 import { useEffect, useState } from "react";
 
 type UseSakeListReturn = {
@@ -17,7 +17,7 @@ export const useSakeList = (): UseSakeListReturn => {
     const fetchSakes = async () => {
       try {
         setIsLoading(true);
-        const api = getSakeHackBackendAPI();
+        const api = getSakes();
         const response = await api.listSakes({ limit: 100 });
 
         if (response.data) {
