@@ -7,11 +7,52 @@
  * OpenAPI spec version: 1.0.0
  */
 import { customInstance } from "../axios/client";
+export type SakeCategory = (typeof SakeCategory)[keyof typeof SakeCategory];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SakeCategory = {
+  JAPANESE_SAKE: "JAPANESE_SAKE",
+  WHISKY: "WHISKY",
+  WINE: "WINE",
+  BEER: "BEER",
+  SHOCHU: "SHOCHU",
+  AWAMORI: "AWAMORI",
+  RIQUEUR: "RIQUEUR",
+  SPIRITS: "SPIRITS",
+  OTHER: "OTHER",
+} as const;
+
+export interface Sake {
+  /** 酒ID */
+  id: number;
+  category: SakeCategory;
+  /** 酒名 */
+  name: string;
+  /** 画像URL formatは実装次第 */
+  imagePreview: string;
+}
+
+export interface SakeListMeta {
+  /** 総件数 */
+  total: number;
+  /** スキップした件数 */
+  offset: number;
+  /** 取得した件数 */
+  limit: number;
+}
+
 export interface APIError {
   /** エラーコード */
   code: string;
   /** エラーメッセージ */
   message: string;
+}
+
+export interface ListSakesResponse {
+  /** 酒のリスト */
+  data?: Sake[];
+  meta?: SakeListMeta;
+  errors?: APIError[];
 }
 
 /**
@@ -30,21 +71,10 @@ export interface ErrorResponse {
   errors?: APIError[];
 }
 
-export interface PaginationMeta {
-  /** 総件数 */
-  total: number;
-  /** 現在のページ番号 */
-  page: number;
-  /** 1ページあたりの件数 */
-  per_page: number;
-  /** 総ページ数 */
-  total_pages: number;
-}
-
-export interface SakeType {
-  /** 酒の種類ID */
+export interface SakeKind {
+  /** 酒の小分類ID */
   id: number;
-  /** 酒の種類の名前 */
+  /** 酒の小分類の名前 */
   name: string;
 }
 
@@ -54,12 +84,12 @@ export interface Brewery {
   /** 酒造名 */
   name: string;
   /** 所在国 */
-  origin_country: string;
+  originCountry: string;
   /**
    * 所在地域
    * @nullable
    */
-  origin_region?: string | null;
+  originRegion?: string | null;
   /**
    * 緯度
    * @nullable
@@ -70,6 +100,13 @@ export interface Brewery {
    * @nullable
    */
   longitude?: number | null;
+}
+
+export interface SakeName {
+  /** 漢字・英名の名前 */
+  name: string;
+  /** 読み方 */
+  phonetic: string;
 }
 
 export interface DrinkStyle {
@@ -84,44 +121,106 @@ export interface DrinkStyle {
   description?: string | null;
 }
 
-export interface Sake {
+export interface SakeDetail {
   /** 酒ID */
   id: number;
-  type: SakeType;
+  category: SakeCategory;
+  kind: SakeKind;
   brewery: Brewery;
-  /** 酒名 */
-  name: string;
+  name: SakeName;
   /** アルコール度数(%) */
   abv: number;
-  /** 味の特徴 */
-  taste_notes: string;
+  /** 購入時容量 */
+  purchaseVolume: number;
+  /** 残容量 */
+  remainingVolume: number;
   /**
    * 感想
    * @nullable
    */
-  memo?: string | null;
+  memo: string | null;
   /** おすすめの飲み方 */
-  drink_styles: DrinkStyle[];
+  drinkStyles: DrinkStyle[];
+  /** 購入時価格 */
+  price: number;
+  /** 表示用の画像URL */
+  imageUrl?: string;
   /** 作成日時 */
-  created_at: string;
+  createdAt: string;
   /** 更新日時 */
-  updated_at: string;
+  updatedAt: string;
 }
 
-export interface SakeListMeta {
-  /** 総件数 */
-  total: number;
-  /** スキップした件数 */
-  offset: number;
-  /** 取得した件数 */
-  limit: number;
+export interface CreateSakeRequest {
+  category: SakeCategory;
+  kind: SakeKind;
+  brewery: Brewery;
+  name: SakeName;
+  /** アルコール度数(%) */
+  abv: number;
+  /** 購入時容量 */
+  purchaseVolume: number;
+  /** 残容量 */
+  remainingVolume: number;
+  /**
+   * 感想
+   * @nullable
+   */
+  memo: string | null;
+  /** おすすめの飲み方 */
+  drinkStyles: DrinkStyle[];
+  /** 購入時価格 */
+  price: number;
+  /** S3/RustFSのオブジェクトキー */
+  objectKey?: string;
 }
 
-export interface ListSakesResponse {
-  /** 酒のリスト */
-  data?: Sake[];
-  meta?: SakeListMeta;
+export interface CreateSakeResponse {
+  data?: Sake;
   errors?: APIError[];
+}
+
+export interface UpdateSakeRequest {
+  category: SakeCategory;
+  kind: SakeKind;
+  brewery: Brewery;
+  name: SakeName;
+  /** アルコール度数(%) */
+  abv: number;
+  /** 購入時容量 */
+  purchaseVolume: number;
+  /** 残容量 */
+  remainingVolume: number;
+  /**
+   * 感想
+   * @nullable
+   */
+  memo: string | null;
+  /** おすすめの飲み方 */
+  drinkStyles: DrinkStyle[];
+  /** 購入時価格 */
+  price: number;
+  /** S3/RustFSのオブジェクトキー */
+  objectKey?: string;
+}
+
+export interface PatchStockRequest {
+  /** S3/RustFSのオブジェクトキー */
+  objectKey: string;
+}
+
+export interface PresignedUrlRequest {
+  /** アップロードするファイルのContent-Type */
+  contentType: string;
+  /** アップロードするファイル名 */
+  filename: string;
+}
+
+export interface PresignedUrlResponse {
+  /** 署名付きアップロードURL */
+  uploadUrl: string;
+  /** S3/RustFSのオブジェクトキー */
+  objectKey: string;
 }
 
 /**
@@ -130,29 +229,14 @@ export interface ListSakesResponse {
 export type BadRequestResponse = ErrorResponse;
 
 /**
- * 認証失敗
+ * サーバー内部エラー
  */
-export type UnauthorizedResponse = ErrorResponse;
-
-/**
- * 権限エラー
- */
-export type ForbiddenResponse = ErrorResponse;
+export type InternalServerErrorResponse = ErrorResponse;
 
 /**
  * リソースが見つからない
  */
 export type NotFoundResponse = ErrorResponse;
-
-/**
- * リソースの競合エラー
- */
-export type ConflictResponse = ErrorResponse;
-
-/**
- * サーバー内部エラー
- */
-export type InternalServerErrorResponse = ErrorResponse;
 
 export type ListSakesParams = {
   /**
@@ -170,12 +254,36 @@ export type ListSakesParams = {
    * 酒の種類IDでフィルタ
    * @minimum 1
    */
-  type_id?: number;
+  typeId?: number;
   /**
    * 酒造IDでフィルタ
    * @minimum 1
    */
-  brewery_id?: number;
+  breweryId?: number;
+};
+
+export type ListStocksParams = {
+  /**
+   * スキップする件数
+   * @minimum 0
+   */
+  offset?: number;
+  /**
+   * 取得する件数
+   * @minimum 1
+   * @maximum 100
+   */
+  limit?: number;
+  /**
+   * 酒の種類IDでフィルタ
+   * @minimum 1
+   */
+  typeId?: number;
+  /**
+   * 酒造IDでフィルタ
+   * @minimum 1
+   */
+  breweryId?: number;
 };
 
 export const getSakeHackBackendAPI = () => {
@@ -191,8 +299,139 @@ export const getSakeHackBackendAPI = () => {
     });
   };
 
-  return { listSakes };
+  /**
+   * 酒の詳細情報を取得します
+   * @summary 酒詳細取得
+   */
+  const getSakeDetail = (id: number) => {
+    return customInstance<SakeDetail>({ url: `/sakes/${id}`, method: "GET" });
+  };
+
+  /**
+   * 在庫の一覧をページネーション付きで取得します
+   * @summary 在庫一覧取得
+   */
+  const listStocks = (params?: ListStocksParams) => {
+    return customInstance<ListSakesResponse>({
+      url: `/stocks`,
+      method: "GET",
+      params,
+    });
+  };
+
+  /**
+   * 新しい在庫を登録します
+   * @summary 在庫を登録
+   */
+  const createStock = (createSakeRequest: CreateSakeRequest) => {
+    return customInstance<CreateSakeResponse>({
+      url: `/stocks`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: createSakeRequest,
+    });
+  };
+
+  /**
+   * 在庫の詳細情報を取得します
+   * @summary 在庫詳細取得
+   */
+  const getStockDetail = (id: number) => {
+    return customInstance<SakeDetail>({ url: `/stocks/${id}`, method: "GET" });
+  };
+
+  /**
+   * 既存の在庫情報を更新します
+   * @summary 在庫情報更新
+   */
+  const updateStock = (id: number, updateSakeRequest: UpdateSakeRequest) => {
+    return customInstance<SakeDetail>({
+      url: `/stocks/${id}`,
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      data: updateSakeRequest,
+    });
+  };
+
+  /**
+   * 在庫情報を部分的に更新します(画像アップロード後のobjectKey設定等)
+   * @summary 在庫部分更新
+   */
+  const patchStock = (id: number, patchStockRequest: PatchStockRequest) => {
+    return customInstance<SakeDetail>({
+      url: `/stocks/${id}`,
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      data: patchStockRequest,
+    });
+  };
+
+  /**
+   * 指定された在庫情報を削除します
+   * @summary 在庫情報削除
+   */
+  const deleteStock = (id: number) => {
+    return customInstance<void>({ url: `/stocks/${id}`, method: "DELETE" });
+  };
+
+  /**
+ * 指定された在庫の画像アップロード用署名付きURLを発行します。
+DBへの副作用はありません。アップロード成功後にPATCH /stocks/{id}でobjectKeyを保存してください。
+
+ * @summary 画像アップロードURL発行
+ */
+  const createStockUploadUrl = (
+    id: number,
+    presignedUrlRequest: PresignedUrlRequest,
+  ) => {
+    return customInstance<PresignedUrlResponse>({
+      url: `/stocks/${id}/upload-url`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: presignedUrlRequest,
+    });
+  };
+
+  return {
+    listSakes,
+    getSakeDetail,
+    listStocks,
+    createStock,
+    getStockDetail,
+    updateStock,
+    patchStock,
+    deleteStock,
+    createStockUploadUrl,
+  };
 };
 export type ListSakesResult = NonNullable<
   Awaited<ReturnType<ReturnType<typeof getSakeHackBackendAPI>["listSakes"]>>
+>;
+export type GetSakeDetailResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getSakeHackBackendAPI>["getSakeDetail"]>>
+>;
+export type ListStocksResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getSakeHackBackendAPI>["listStocks"]>>
+>;
+export type CreateStockResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getSakeHackBackendAPI>["createStock"]>>
+>;
+export type GetStockDetailResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getSakeHackBackendAPI>["getStockDetail"]>
+  >
+>;
+export type UpdateStockResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getSakeHackBackendAPI>["updateStock"]>>
+>;
+export type PatchStockResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getSakeHackBackendAPI>["patchStock"]>>
+>;
+export type DeleteStockResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getSakeHackBackendAPI>["deleteStock"]>>
+>;
+export type CreateStockUploadUrlResult = NonNullable<
+  Awaited<
+    ReturnType<ReturnType<typeof getSakeHackBackendAPI>["createStockUploadUrl"]>
+  >
 >;
