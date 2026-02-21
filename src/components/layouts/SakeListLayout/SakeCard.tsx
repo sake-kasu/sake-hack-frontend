@@ -4,12 +4,9 @@ import {
   CardContent,
   CardMedia,
   Typography,
-  Box,
-  IconButton,
 } from "@mui/material";
-import { Favorite, FavoriteBorder } from "@mui/icons-material";
-import type { Sake } from "@/types/sake";
-import { useSakeLike } from "@/features/sake/hooks/useSakeLike";
+import type { Sake } from "@/lib/api/generated";
+import { getCategoryLabel } from "@/features/stocks/constants";
 
 type SakeCardProps = {
   sake: Sake;
@@ -17,16 +14,6 @@ type SakeCardProps = {
 };
 
 export const SakeCard = ({ sake, onClick }: SakeCardProps) => {
-  const { isLiked, likeCount, toggleLike, isProcessing } = useSakeLike(
-    sake.id,
-    sake.likeCount,
-  );
-
-  const handleLikeClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // カード全体のクリックイベントを防ぐ
-    toggleLike();
-  };
-
   return (
     <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <CardActionArea
@@ -44,9 +31,9 @@ export const SakeCard = ({ sake, onClick }: SakeCardProps) => {
             justifyContent: "center",
           }}
         >
-          {sake.imageUrl ? (
+          {sake.imagePreview ? (
             <img
-              src={sake.imageUrl}
+              src={sake.imagePreview}
               alt={sake.name}
               style={{
                 width: "100%",
@@ -64,45 +51,9 @@ export const SakeCard = ({ sake, onClick }: SakeCardProps) => {
           <Typography gutterBottom variant="h6" component="div" noWrap>
             {sake.name}
           </Typography>
-          <Typography variant="body2" color="text.secondary" noWrap>
-            {sake.type.name}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" noWrap>
-            {sake.brewery.name}
-          </Typography>
           <Typography variant="body2" color="text.secondary">
-            ABV: {sake.abv}%
+            {getCategoryLabel(sake.category)}
           </Typography>
-
-          {/* いいねボタン */}
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              mt: 1,
-            }}
-          >
-            <IconButton
-              size="small"
-              onClick={handleLikeClick}
-              disabled={isProcessing}
-              sx={{
-                padding: 0.5,
-                "&:hover": {
-                  backgroundColor: "transparent",
-                },
-              }}
-            >
-              {isLiked ? (
-                <Favorite sx={{ color: "error.main", fontSize: 20 }} />
-              ) : (
-                <FavoriteBorder sx={{ color: "grey.500", fontSize: 20 }} />
-              )}
-            </IconButton>
-            <Typography variant="body2" color="text.secondary" sx={{ ml: 0.5 }}>
-              {likeCount}
-            </Typography>
-          </Box>
         </CardContent>
       </CardActionArea>
     </Card>

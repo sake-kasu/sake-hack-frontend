@@ -1,6 +1,5 @@
 import { getSakeHackBackendAPI } from "@/lib/api/generated";
-import { mapSakeListFromApi } from "@/mappers/sakeMapper";
-import type { Sake } from "@/types/sake";
+import type { Sake } from "@/lib/api/generated";
 import { useEffect, useState } from "react";
 
 type UseSakeListReturn = {
@@ -22,8 +21,7 @@ export const useSakeList = (): UseSakeListReturn => {
         const response = await api.listSakes({ limit: 100 });
 
         if (response.data) {
-          const domainSakes = mapSakeListFromApi(response.data);
-          setSakes(domainSakes);
+          setSakes(response.data);
         }
       } catch (err) {
         setError(err instanceof Error ? err : new Error("Unknown error"));

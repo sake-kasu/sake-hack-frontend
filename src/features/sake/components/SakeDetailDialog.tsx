@@ -4,11 +4,11 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  Divider,
   IconButton,
   Typography,
 } from "@mui/material";
-import type { Sake } from "@/types/sake";
+import type { Sake } from "@/lib/api/generated";
+import { getCategoryLabel } from "@/features/stocks/constants";
 
 type SakeDetailDialogProps = {
   sake: Sake | null;
@@ -43,7 +43,7 @@ export const SakeDetailDialog = ({
         </Box>
       </DialogTitle>
       <DialogContent dividers>
-        {sake.imageUrl && (
+        {sake.imagePreview && (
           <Box
             sx={{
               width: "100%",
@@ -56,7 +56,7 @@ export const SakeDetailDialog = ({
             }}
           >
             <img
-              src={sake.imageUrl}
+              src={sake.imagePreview}
               alt={sake.name}
               style={{
                 maxWidth: "100%",
@@ -69,47 +69,10 @@ export const SakeDetailDialog = ({
 
         <Box sx={{ mb: 2 }}>
           <Typography variant="subtitle2" color="text.secondary">
-            種類
-          </Typography>
-          <Typography variant="body1">{sake.type.name}</Typography>
-        </Box>
-
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="subtitle2" color="text.secondary">
-            酒造
+            大分類
           </Typography>
           <Typography variant="body1">
-            {sake.brewery.name}
-            {sake.brewery.originRegion ? ` (${sake.brewery.originRegion})` : ""}
-          </Typography>
-        </Box>
-
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="subtitle2" color="text.secondary">
-            アルコール度数
-          </Typography>
-          <Typography variant="body1">{sake.abv}%</Typography>
-        </Box>
-        {sake.memo && (
-          <>
-            <Divider sx={{ my: 2 }} />
-            <Box>
-              <Typography variant="subtitle2" color="text.secondary">
-                メモ
-              </Typography>
-              <Typography variant="body1">{sake.memo}</Typography>
-            </Box>
-          </>
-        )}
-
-        <Divider sx={{ my: 2 }} />
-        <Box>
-          <Typography variant="caption" color="text.secondary">
-            作成日: {sake.createdAt.toLocaleDateString("ja-JP")}
-          </Typography>
-          <br />
-          <Typography variant="caption" color="text.secondary">
-            更新日: {sake.updatedAt.toLocaleDateString("ja-JP")}
+            {getCategoryLabel(sake.category)}
           </Typography>
         </Box>
       </DialogContent>
