@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StockListLayout } from "@/features/stocks/components/StockListLayout";
-import { SakeDetailDialog } from "@/features/stocks/components/SakeDetailDialog";
+import { StockDetailDialog } from "@/features/stocks/components/StockDetailDialog";
 import { useStockList } from "@/features/stocks/hooks/useStockList";
 import type { Sake } from "@/lib/api/generated";
 import { Fab, Typography } from "@mui/material";
@@ -50,7 +50,7 @@ export const SakeStocks = () => {
           </Fab>
         }
       />
-      <SakeDetailDialog
+      <StockDetailDialog
         stockId={selectedStockId}
         open={open}
         mode={selectedStockId !== undefined ? "edit" : "new"}
