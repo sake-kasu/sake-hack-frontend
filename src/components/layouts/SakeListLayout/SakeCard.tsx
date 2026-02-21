@@ -1,4 +1,5 @@
 import {
+  Box,
   Card,
   CardActionArea,
   CardContent,
@@ -7,13 +8,15 @@ import {
 } from "@mui/material";
 import type { Sake } from "@/lib/api/generated/models";
 import { getCategoryLabel } from "@/features/stocks/constants";
+import { LikeButton } from "@/features/sake/components/LikeButton";
 
 type SakeCardProps = {
   sake: Sake;
   onClick: () => void;
+  onLikeToggle: () => void;
 };
 
-export const SakeCard = ({ sake, onClick }: SakeCardProps) => {
+export const SakeCard = ({ sake, onClick, onLikeToggle }: SakeCardProps) => {
   return (
     <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <CardActionArea
@@ -56,6 +59,22 @@ export const SakeCard = ({ sake, onClick }: SakeCardProps) => {
           </Typography>
         </CardContent>
       </CardActionArea>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          px: 1,
+          pb: 1,
+        }}
+      >
+        <LikeButton
+          isLiked={sake.isLiked}
+          likeCount={sake.likeCount}
+          onToggle={onLikeToggle}
+          size="small"
+        />
+      </Box>
     </Card>
   );
 };

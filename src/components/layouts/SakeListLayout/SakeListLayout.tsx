@@ -17,6 +17,7 @@ type SakeListLayoutProps = {
   isLoading: boolean;
   error: Error | null;
   onCardClick: (sake: Sake) => void;
+  onLikeToggle: (sakeId: number) => void;
   headerAction?: ReactNode;
   floatingAction?: ReactNode;
 };
@@ -27,6 +28,7 @@ export const SakeListLayout = ({
   isLoading,
   error,
   onCardClick,
+  onLikeToggle,
   headerAction,
   floatingAction,
 }: SakeListLayoutProps) => {
@@ -76,7 +78,11 @@ export const SakeListLayout = ({
       <Grid container spacing={3}>
         {sakes.map((sake) => (
           <Grid key={sake.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
-            <SakeCard sake={sake} onClick={() => onCardClick(sake)} />
+            <SakeCard
+              sake={sake}
+              onClick={() => onCardClick(sake)}
+              onLikeToggle={() => onLikeToggle(sake.id)}
+            />
           </Grid>
         ))}
       </Grid>
