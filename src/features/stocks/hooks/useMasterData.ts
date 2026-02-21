@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import type { Brewery, DrinkStyle, SakeKind } from "@/lib/api/generated";
-import { getSakeHackBackendAPI } from "@/lib/api/generated";
+import type { Brewery, DrinkStyle, SakeKind } from "@/lib/api/generated/models";
+import { getMaster } from "@/lib/api/generated/master/master";
 
 type UseMasterDataReturn = {
   kinds: SakeKind[];
@@ -27,7 +27,7 @@ export const useMasterData = (): UseMasterDataReturn => {
     const fetchAll = async () => {
       try {
         setIsLoading(true);
-        const api = getSakeHackBackendAPI();
+        const api = getMaster();
 
         const [kindsRes, breweriesRes, drinkStylesRes] = await Promise.all([
           api.listKinds(),
@@ -50,7 +50,7 @@ export const useMasterData = (): UseMasterDataReturn => {
 
   const searchBreweries = useCallback(async (keyword: string) => {
     try {
-      const api = getSakeHackBackendAPI();
+      const api = getMaster();
       const res = await api.listBreweries({
         keyword: keyword || undefined,
         limit: 100,
