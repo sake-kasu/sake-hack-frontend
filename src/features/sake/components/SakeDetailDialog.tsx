@@ -1,15 +1,21 @@
 import CloseIcon from "@mui/icons-material/Close";
+import LocalBarIcon from "@mui/icons-material/LocalBar";
 import {
   Box,
+  Chip,
   Dialog,
   DialogContent,
   DialogTitle,
+  Divider,
   IconButton,
   Typography,
 } from "@mui/material";
 import type { Sake } from "@/lib/api/generated/models";
 import { LikeButton } from "@/features/sake/components/LikeButton";
-import { getCategoryLabel } from "@/features/stocks/constants";
+import {
+  getCategoryLabel,
+  getCategoryColor,
+} from "@/features/stocks/constants";
 
 type SakeDetailDialogProps = {
   sake: Sake | null;
@@ -28,11 +34,13 @@ export const SakeDetailDialog = ({
     return null;
   }
 
+  const categoryColor = getCategoryColor(sake.category);
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>
+      <DialogTitle sx={{ pb: 1 }}>
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+          <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
             {sake.name}
           </Typography>
           <LikeButton
@@ -43,25 +51,27 @@ export const SakeDetailDialog = ({
           />
           <IconButton
             edge="end"
-            color="inherit"
             onClick={onClose}
             aria-label="close"
+            sx={{ color: "text.secondary" }}
           >
             <CloseIcon />
           </IconButton>
         </Box>
       </DialogTitle>
-      <DialogContent dividers>
-        {sake.imagePreview && (
+      <DialogContent sx={{ pt: 0 }}>
+        {sake.imagePreview ? (
           <Box
             sx={{
               width: "100%",
-              height: 300,
+              height: 260,
               mb: 2,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              backgroundColor: "grey.100",
+              backgroundColor: "grey.50",
+              borderRadius: 2,
+              overflow: "hidden",
             }}
           >
             <img
@@ -74,15 +84,57 @@ export const SakeDetailDialog = ({
               }}
             />
           </Box>
+        ) : (
+          <Box
+            sx={{
+              width: "100%",
+              height: 160,
+              mb: 2,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: `linear-gradient(135deg, ${categoryColor}18 0%, ${categoryColor}08 100%)`,
+              borderRadius: 2,
+            }}
+          >
+            <LocalBarIcon
+              sx={{
+                fontSize: 48,
+                color: categoryColor,
+                opacity: 0.3,
+              }}
+            />
+          </Box>
         )}
 
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="subtitle2" color="text.secondary">
+        <Divider sx={{ mb: 2 }} />
+
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
+          <Typography
+            variant="subtitle2"
+            color="text.secondary"
+            sx={{ minWidth: 56 }}
+          >
             大分類
           </Typography>
-          <Typography variant="body1">
-            {getCategoryLabel(sake.category)}
-          </Typography>
+          <Chip
+            label={getCategoryLabel(sake.category)}
+            size="small"
+            sx={{
+              height: 22,
+              fontSize: "0.6875rem",
+              backgroundColor: `${categoryColor}12`,
+              color: categoryColor,
+              border: `1px solid ${categoryColor}30`,
+              fontWeight: 500,
+            }}
+          />
         </Box>
       </DialogContent>
     </Dialog>
