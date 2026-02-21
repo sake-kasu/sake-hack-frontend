@@ -1,5 +1,8 @@
-import { getSakeHackBackendAPI } from "@/lib/api/generated";
-import type { CreateSakeRequest, UpdateSakeRequest } from "@/lib/api/generated";
+import { getStocks } from "@/lib/api/generated/stocks/stocks";
+import type {
+  CreateSakeRequest,
+  UpdateSakeRequest,
+} from "@/lib/api/generated/models";
 import { useCallback, useState } from "react";
 
 type UseStockMutationReturn = {
@@ -23,7 +26,7 @@ export const useStockMutation = (
   const [error, setError] = useState<Error | null>(null);
 
   const uploadImage = useCallback(async (stockId: number, imageFile: File) => {
-    const api = getSakeHackBackendAPI();
+    const api = getStocks();
 
     // Step 2: 署名付きURL取得
     const presigned = await api.createStockUploadUrl(stockId, {
@@ -50,7 +53,7 @@ export const useStockMutation = (
       try {
         setIsSaving(true);
         setError(null);
-        const api = getSakeHackBackendAPI();
+        const api = getStocks();
 
         // Step 1: 在庫登録
         const response = await api.createStock(request);
@@ -79,7 +82,7 @@ export const useStockMutation = (
       try {
         setIsSaving(true);
         setError(null);
-        const api = getSakeHackBackendAPI();
+        const api = getStocks();
 
         await api.updateStock(id, request);
 

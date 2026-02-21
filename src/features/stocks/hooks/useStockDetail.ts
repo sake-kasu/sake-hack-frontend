@@ -1,5 +1,5 @@
-import { getSakeHackBackendAPI } from "@/lib/api/generated";
-import type { SakeDetail } from "@/lib/api/generated";
+import { getStocks } from "@/lib/api/generated/stocks/stocks";
+import type { SakeDetail } from "@/lib/api/generated/models";
 import { useCallback, useState } from "react";
 
 type UseStockDetailReturn = {
@@ -19,7 +19,7 @@ export const useStockDetail = (): UseStockDetailReturn => {
     try {
       setIsLoading(true);
       setError(null);
-      const api = getSakeHackBackendAPI();
+      const api = getStocks();
       const response = await api.getStockDetail(id);
       setDetail(response);
     } catch (err) {
