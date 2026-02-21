@@ -70,4 +70,5 @@ deps-clean: ## 依存関係をクリーンインストール
 # API開発
 api-generate: ## OpenAPI仕様からAPIクライアントを自動生成
 	@./scripts/generate-api.sh $(BRANCH)
+	@bun biome format --write $(SRC_DIR)/lib/api
 	@echo "finished."
