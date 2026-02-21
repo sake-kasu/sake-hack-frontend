@@ -4,6 +4,7 @@ import axios, {
   type AxiosRequestConfig,
   type InternalAxiosRequestConfig,
 } from "axios";
+import { getOrCreateLikeToken } from "@/features/sake/utils/likeToken";
 
 const MAX_RETRIES = 3;
 const INITIAL_RETRY_DELAY = 1000; // 1秒
@@ -51,7 +52,10 @@ export const createAxiosClient = (): AxiosInstance => {
   // リクエストインターセプター
   client.interceptors.request.use(
     (config) => {
-      // 認証トークンなどを追加
+      // /sakes パスへのリクエストに X-Like-Token を付与
+      if (config.url?.includes("/sakes")) {
+        config.headers.set("X-Like-Token", getOrCreateLikeToken());
+      }
       return config;
     },
     (error) => Promise.reject(error),
