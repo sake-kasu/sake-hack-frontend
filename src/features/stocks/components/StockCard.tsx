@@ -8,11 +8,13 @@ import {
   Chip,
   Typography,
 } from "@mui/material";
+import { useState } from "react";
 import {
   getCategoryColor,
   getCategoryLabel,
 } from "@/features/stocks/constants";
 import type { Sake } from "@/lib/api/generated/models";
+import RandomBoozeSpinner from "@/components/ui/RandomBoozeSpinner";
 
 type StockCardProps = {
   stock: Sake;
@@ -21,6 +23,7 @@ type StockCardProps = {
 
 export const StockCard = ({ stock, onClick }: StockCardProps) => {
   const categoryColor = getCategoryColor(stock.category);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
     <Card
@@ -62,15 +65,31 @@ export const StockCard = ({ stock, onClick }: StockCardProps) => {
           }}
         >
           {stock.imagePreview ? (
-            <img
-              src={stock.imagePreview}
-              alt={stock.name}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-              }}
-            />
+            <>
+              <div
+                style={{
+                  position: "absolute",
+                  opacity: imageLoaded ? 0 : 1,
+                  transition: "opacity 0.3s ease",
+                  pointerEvents: "none",
+                }}
+              >
+                <RandomBoozeSpinner size={40} />
+              </div>
+              <img
+                src={stock.imagePreview}
+                alt={stock.name}
+                onLoad={() => setImageLoaded(true)}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  opacity: imageLoaded ? 1 : 0,
+                  filter: imageLoaded ? "blur(0)" : "blur(8px)",
+                  transition: "opacity 0.4s ease, filter 0.4s ease",
+                }}
+              />
+            </>
           ) : (
             <LocalBarIcon
               sx={{

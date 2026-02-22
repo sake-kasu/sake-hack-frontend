@@ -8,12 +8,14 @@ import {
   Typography,
 } from "@mui/material";
 import LocalBarIcon from "@mui/icons-material/LocalBar";
+import { useState } from "react";
 import type { Sake } from "@/lib/api/generated/models";
 import {
   getCategoryLabel,
   getCategoryColor,
 } from "@/features/stocks/constants";
 import { LikeButton } from "@/features/sake/components/LikeButton";
+import RandomBoozeSpinner from "@/components/ui/RandomBoozeSpinner";
 
 type SakeCardProps = {
   sake: Sake;
@@ -23,6 +25,7 @@ type SakeCardProps = {
 
 export const SakeCard = ({ sake, onClick, onLikeToggle }: SakeCardProps) => {
   const categoryColor = getCategoryColor(sake.category);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
     <Card
@@ -64,15 +67,31 @@ export const SakeCard = ({ sake, onClick, onLikeToggle }: SakeCardProps) => {
           }}
         >
           {sake.imagePreview ? (
-            <img
-              src={sake.imagePreview}
-              alt={sake.name}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-              }}
-            />
+            <>
+              <div
+                style={{
+                  position: "absolute",
+                  opacity: imageLoaded ? 0 : 1,
+                  transition: "opacity 0.3s ease",
+                  pointerEvents: "none",
+                }}
+              >
+                <RandomBoozeSpinner size={40} />
+              </div>
+              <img
+                src={sake.imagePreview}
+                alt={sake.name}
+                onLoad={() => setImageLoaded(true)}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  opacity: imageLoaded ? 1 : 0,
+                  filter: imageLoaded ? "blur(0)" : "blur(8px)",
+                  transition: "opacity 0.4s ease, filter 0.4s ease",
+                }}
+              />
+            </>
           ) : (
             <LocalBarIcon
               sx={{
