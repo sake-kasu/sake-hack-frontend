@@ -24,6 +24,7 @@ import {
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import RandomBoozeSpinner from "@/components/ui/RandomBoozeSpinner";
 import { getCategoryLabel } from "@/features/stocks/constants";
 import { useMasterData } from "@/features/stocks/hooks/useMasterData";
@@ -108,6 +109,7 @@ export const StockDetailDialog = ({
   onClose,
   onSaveSuccess,
 }: StockDetailDialogProps) => {
+  const { t } = useTranslation();
   const { notifySuccess, notifyWarning } = useNotification();
 
   const {
@@ -233,12 +235,12 @@ export const StockDetailDialog = ({
     event.target.value = "";
 
     if (!file.type.startsWith("image/") && !isHeicFile(file)) {
-      alert("画像ファイルを選択してください");
+      alert(t("stock.image.selectFile"));
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      alert("ファイルサイズは5MB以下にしてください");
+      alert(t("stock.image.fileSizeLimit"));
       return;
     }
 
@@ -247,15 +249,13 @@ export const StockDetailDialog = ({
     if (isHeicFile(file)) {
       const supported = await canBrowserDecodeHeic();
       if (!supported) {
-        notifyWarning(
-          "このブラウザは HEIC に対応していません。Safari で開くか、事前に PNG/JPEG に変換してください。",
-        );
+        notifyWarning(t("stock.image.heicNotSupported"));
         return;
       }
       try {
         targetFile = await convertHeicToPng(file);
       } catch {
-        alert("HEIC 画像の変換に失敗しました");
+        alert(t("stock.image.heicConversionFailed"));
         return;
       }
     }
@@ -270,7 +270,7 @@ export const StockDetailDialog = ({
       }
     };
     reader.onerror = () => {
-      alert("画像の読み込みに失敗しました");
+      alert(t("stock.image.loadFailed"));
     };
     reader.readAsDataURL(targetFile);
   };
@@ -326,10 +326,10 @@ export const StockDetailDialog = ({
     try {
       if (mode === "new") {
         await createStock(request, imageFile);
-        notifySuccess("在庫を登録しました");
+        notifySuccess(t("stock.message.created"));
       } else if (stockId !== undefined) {
         await updateStock(stockId, request, imageFile, existingObjectKey);
-        notifySuccess("在庫を更新しました");
+        notifySuccess(t("stock.message.updated"));
       }
     } catch {
       // エラー通知はAxiosインターセプターで自動表示される
@@ -360,7 +360,9 @@ export const StockDetailDialog = ({
           }}
         >
           <Box component="span" sx={{ fontWeight: "bold" }}>
-            {mode === "edit" ? "在庫の詳細を編集" : "新しい在庫を追加"}
+            {mode === "edit"
+              ? t("stock.detail.editTitle")
+              : t("stock.detail.addTitle")}
           </Box>
           <IconButton
             edge="end"
@@ -382,7 +384,7 @@ export const StockDetailDialog = ({
             render={({ field, fieldState }) => (
               <TextField
                 {...field}
-                label="名前"
+                label={t("stock.detail.name")}
                 fullWidth
                 required
                 error={!!fieldState.error}
@@ -404,7 +406,7 @@ export const StockDetailDialog = ({
             render={({ field, fieldState }) => (
               <TextField
                 {...field}
-                label="ふりがな"
+                label={t("stock.detail.furigana")}
                 fullWidth
                 error={!!fieldState.error}
                 inputProps={{ maxLength: 100 }}
@@ -473,7 +475,7 @@ export const StockDetailDialog = ({
           ) : (
             <Box sx={{ textAlign: "center", color: "grey.600" }}>
               <AddPhotoAlternateIcon sx={{ fontSize: 60, mb: 1 }} />
-              <Box>画像を追加</Box>
+              <Box>{t("stock.image.add")}</Box>
             </Box>
           )}
         </Box>
@@ -482,16 +484,16 @@ export const StockDetailDialog = ({
         <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleMenuClose}>
           <MenuItem onClick={handleCaptureClick}>
             <CameraAltIcon sx={{ mr: 1 }} />
-            写真を撮影
+            {t("stock.image.takePhoto")}
           </MenuItem>
           <MenuItem onClick={handleSelectClick}>
             <PhotoLibraryIcon sx={{ mr: 1 }} />
-            写真を選択
+            {t("stock.image.selectPhoto")}
           </MenuItem>
           {imagePreviewUrl && (
             <MenuItem onClick={handleImageDelete}>
               <DeleteIcon sx={{ mr: 1 }} />
-              削除
+              {t("common.delete")}
             </MenuItem>
           )}
         </Menu>
@@ -522,8 +524,8 @@ export const StockDetailDialog = ({
             control={control}
             render={({ field, fieldState }) => (
               <FormControl fullWidth required error={!!fieldState.error}>
-                <InputLabel>大分類</InputLabel>
-                <Select {...field} label="大分類">
+                <InputLabel>{t("stock.detail.category")}</InputLabel>
+                <Select {...field} label={t("stock.detail.category")}>
                   {Object.values(SakeCategory).map((value) => (
                     <MenuItem key={value} value={value}>
                       {getCategoryLabel(value)}
@@ -565,7 +567,7 @@ export const StockDetailDialog = ({
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="小分類"
+                    label={t("stock.detail.subcategory")}
                     required
                     error={!!fieldState.error}
                     helperText={
@@ -610,7 +612,7 @@ export const StockDetailDialog = ({
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="酒造名"
+                    label={t("stock.detail.breweryName")}
                     required
                     error={!!fieldState.error}
                     helperText={fieldState.error?.message}
@@ -629,11 +631,11 @@ export const StockDetailDialog = ({
             render={({ field, fieldState }) => (
               <TextField
                 {...field}
-                label="所在国"
+                label={t("stock.detail.country")}
                 fullWidth
                 required
                 error={!!fieldState.error}
-                placeholder="日本"
+                placeholder={t("stock.detail.countryPlaceholder")}
                 helperText={fieldState.error?.message}
               />
             )}
@@ -646,7 +648,11 @@ export const StockDetailDialog = ({
             name="originRegion"
             control={control}
             render={({ field }) => (
-              <TextField {...field} label="産地" fullWidth />
+              <TextField
+                {...field}
+                label={t("stock.detail.region")}
+                fullWidth
+              />
             )}
           />
         </Box>
@@ -665,7 +671,7 @@ export const StockDetailDialog = ({
                     e.target.value === "" ? "" : Number(e.target.value),
                   )
                 }
-                label="アルコール度数 (%)"
+                label={t("stock.detail.abv")}
                 type="number"
                 fullWidth
                 required
@@ -691,7 +697,7 @@ export const StockDetailDialog = ({
                     e.target.value === "" ? "" : Number(e.target.value),
                   )
                 }
-                label="購入時容量 (mL)"
+                label={t("stock.detail.volume")}
                 type="number"
                 fullWidth
                 required
@@ -710,8 +716,8 @@ export const StockDetailDialog = ({
             control={control}
             render={({ field }) => (
               <FormControl fullWidth>
-                <InputLabel>残容量 (%)</InputLabel>
-                <Select {...field} label="残容量 (%)">
+                <InputLabel>{t("stock.detail.remainingVolume")}</InputLabel>
+                <Select {...field} label={t("stock.detail.remainingVolume")}>
                   {REMAINING_VOLUME_OPTIONS.map((volume) => (
                     <MenuItem key={volume} value={volume.toString()}>
                       {volume}%
@@ -737,7 +743,7 @@ export const StockDetailDialog = ({
                     e.target.value === "" ? "" : Number(e.target.value),
                   )
                 }
-                label="購入時価格 (円)"
+                label={t("stock.detail.price")}
                 type="number"
                 fullWidth
                 required
@@ -761,7 +767,7 @@ export const StockDetailDialog = ({
               setSelectedDrinkStyles(newValue);
             }}
             renderInput={(params) => (
-              <TextField {...params} label="おすすめの飲み方" />
+              <TextField {...params} label={t("stock.detail.drinkStyle")} />
             )}
           />
         </Box>
@@ -774,7 +780,7 @@ export const StockDetailDialog = ({
             render={({ field, fieldState }) => (
               <TextField
                 {...field}
-                label="自由記述"
+                label={t("stock.detail.freeText")}
                 fullWidth
                 multiline
                 minRows={3}
@@ -794,7 +800,7 @@ export const StockDetailDialog = ({
         {/* ボタン */}
         <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
           <Button onClick={onClose} startIcon={<CloseIcon />} color="inherit">
-            キャンセル
+            {t("common.cancel")}
           </Button>
 
           <Button
@@ -804,7 +810,11 @@ export const StockDetailDialog = ({
             color="primary"
             disabled={isSaving}
           >
-            {isSaving ? "保存中..." : mode === "edit" ? "更新" : "保存"}
+            {isSaving
+              ? t("common.saving")
+              : mode === "edit"
+                ? t("common.update")
+                : t("common.save")}
           </Button>
         </Box>
       </DialogContent>
