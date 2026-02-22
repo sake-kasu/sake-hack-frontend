@@ -13,7 +13,6 @@ import type { NavigationMenuItem } from "@/types/common";
 
 const menuItems: NavigationMenuItem[] = [
   {
-    label: "酒一覧",
     labelKey: "menu.sakeList",
     icon: <ListIcon />,
     path: "/sakes",
