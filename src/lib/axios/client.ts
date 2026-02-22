@@ -5,6 +5,7 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from "axios";
 import { getOrCreateLikeToken } from "@/features/sake/utils/likeToken";
+import { getEnqueueSnackbar } from "@/lib/notification/notificationRef";
 
 const MAX_RETRIES = 3;
 const INITIAL_RETRY_DELAY = 1000; // 1秒
@@ -95,7 +96,45 @@ export const createAxiosClient = (): AxiosInstance => {
     },
   );
 
+  // グローバルエラー通知インターセプター（リトライ後に最終的にrejectされたエラーに対して発火）
+  client.interceptors.response.use(undefined, (error: AxiosError) => {
+    const enqueue = getEnqueueSnackbar();
+    if (enqueue) {
+      const status = error.response?.status;
+      const data = error.response?.data;
+      let message = "通信エラーが発生しました";
+
+      if (status !== undefined && status >= 400 && status < 500) {
+        message = extractErrorMessage(data) ?? "リクエストの処理に失敗しました";
+      } else if (status !== undefined && status >= 500) {
+        message = extractErrorMessage(data) ?? "サーバーエラーが発生しました";
+      }
+
+      enqueue(message, {
+        variant: "error",
+        autoHideDuration: null,
+        anchorOrigin: { vertical: "top", horizontal: "center" },
+      });
+    }
+    return Promise.reject(error);
+  });
+
   return client;
+};
+
+const hasMessageProperty = (data: unknown): data is { message: unknown } => {
+  return data !== null && typeof data === "object" && "message" in data;
+};
+
+const extractErrorMessage = (data: unknown): string | undefined => {
+  if (
+    hasMessageProperty(data) &&
+    typeof data.message === "string" &&
+    data.message.length > 0
+  ) {
+    return data.message;
+  }
+  return undefined;
 };
 
 export const apiClient = createAxiosClient();
