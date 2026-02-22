@@ -4,7 +4,8 @@ import { StockListLayout } from "@/features/stocks/components/StockListLayout";
 import { StockDetailDialog } from "@/features/stocks/components/StockDetailDialog";
 import { useStockList } from "@/features/stocks/hooks/useStockList";
 import type { Sake } from "@/lib/api/generated/models";
-import { Fab, Typography } from "@mui/material";
+import { Fab } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 
 export const SakeStocks = () => {
   const { t } = useTranslation();
@@ -44,9 +45,7 @@ export const SakeStocks = () => {
         onCardClick={handleCardClick}
         floatingAction={
           <Fab color="primary" onClick={handleAddClick}>
-            <Typography fontSize={50} paddingBottom="10px">
-              +
-            </Typography>
+            <AddIcon />
           </Fab>
         }
       />
