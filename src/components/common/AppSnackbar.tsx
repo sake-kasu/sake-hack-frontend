@@ -1,6 +1,6 @@
 import { forwardRef, useCallback } from "react";
 import { type CustomContentProps, useSnackbar } from "notistack";
-import { alpha, useTheme } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
@@ -47,7 +47,7 @@ const AppSnackbar = forwardRef<HTMLDivElement, CustomContentProps>(
           py: 1.5,
           borderRadius: 1,
           borderLeft: `4px solid ${paletteColor}`,
-          backgroundColor: alpha(paletteColor, 0.08),
+          backgroundColor: theme.palette.background.paper,
           boxShadow: theme.shadows[3],
         }}
       >
