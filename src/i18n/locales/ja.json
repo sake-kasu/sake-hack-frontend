@@ -45,6 +45,9 @@
     }
   },
   "stock": {
+    "list": {
+      "title": "在庫一覧"
+    },
     "detail": {
       "editTitle": "在庫の詳細を編集",
       "addTitle": "新しい在庫を追加",

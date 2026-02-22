@@ -38,7 +38,7 @@ export const SakeStocks = () => {
   return (
     <>
       <StockListLayout
-        title={t("sake.list.title")}
+        title={t("stock.list.title")}
         stocks={stocks}
         isLoading={isLoading}
         error={error}

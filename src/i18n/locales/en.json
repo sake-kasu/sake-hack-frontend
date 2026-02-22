@@ -45,6 +45,9 @@
     }
   },
   "stock": {
+    "list": {
+      "title": "Stock List"
+    },
     "detail": {
       "editTitle": "Edit Stock Details",
       "addTitle": "Add New Stock",
