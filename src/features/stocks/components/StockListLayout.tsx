@@ -66,7 +66,7 @@ export const StockListLayout = ({
 
       <Grid container spacing={3}>
         {stocks.map((stock) => (
-          <Grid key={stock.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
+          <Grid key={stock.id} size={{ xs: 6, sm: 6, md: 4, lg: 3 }}>
             <StockCard stock={stock} onClick={() => onCardClick(stock)} />
           </Grid>
         ))}
