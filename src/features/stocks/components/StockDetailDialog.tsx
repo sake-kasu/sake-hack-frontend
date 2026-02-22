@@ -191,7 +191,6 @@ export const StockDetailDialog = ({
     }
   }, [detail, mode, resetForm]);
 
-
   // 画像メニュー
   const handleImageAreaClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
