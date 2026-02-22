@@ -1,7 +1,7 @@
 import { AppBar, Toolbar, IconButton, Typography, Box } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import LanguageIcon from "@mui/icons-material/Language";
 import { useTranslation } from "react-i18next";
+import { useHeaderActions } from "@/providers/HeaderActionsProvider";
 
 type AppHeaderProps = {
   onMenuClick: () => void;
@@ -9,12 +9,8 @@ type AppHeaderProps = {
 };
 
 export const AppHeader = ({ onMenuClick, showMenuButton }: AppHeaderProps) => {
-  const { t, i18n } = useTranslation();
-
-  const handleLanguageToggle = () => {
-    const newLang = i18n.language === "ja" ? "en" : "ja";
-    i18n.changeLanguage(newLang);
-  };
+  const { t } = useTranslation();
+  const headerActions = useHeaderActions();
 
   return (
     <AppBar
@@ -47,15 +43,7 @@ export const AppHeader = ({ onMenuClick, showMenuButton }: AppHeaderProps) => {
         >
           {t("layout.appTitle")}
         </Typography>
-        <Box>
-          <IconButton
-            aria-label={t("layout.changeLanguage")}
-            onClick={handleLanguageToggle}
-            sx={{ color: "text.secondary" }}
-          >
-            <LanguageIcon />
-          </IconButton>
-        </Box>
+        {headerActions && <Box>{headerActions}</Box>}
       </Toolbar>
     </AppBar>
   );
