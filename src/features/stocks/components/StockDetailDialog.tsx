@@ -146,6 +146,7 @@ export const StockDetailDialog = ({
   const [existingObjectKey, setExistingObjectKey] = useState<
     string | undefined
   >(undefined);
+  const [isImageLoading, setIsImageLoading] = useState(false);
 
   // 画像選択メニュー用
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -187,6 +188,14 @@ export const StockDetailDialog = ({
       setExistingObjectKey(detail.objectKey ?? undefined);
     }
   }, [detail, mode, resetForm]);
+
+  useEffect(() => {
+    if (imagePreviewUrl) {
+      setIsImageLoading(true);
+    } else {
+      setIsImageLoading(false);
+    }
+  }, [imagePreviewUrl]);
 
   // 画像メニュー
   const handleImageAreaClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -389,6 +398,7 @@ export const StockDetailDialog = ({
         <Box
           onClick={handleImageAreaClick}
           sx={{
+            position: "relative",
             width: "100%",
             height: 300,
             mb: 2,
@@ -407,15 +417,33 @@ export const StockDetailDialog = ({
           }}
         >
           {imagePreviewUrl ? (
-            <img
-              src={imagePreviewUrl}
-              alt="プレビュー"
-              style={{
-                maxWidth: "100%",
-                maxHeight: "100%",
-                objectFit: "contain",
-              }}
-            />
+            <>
+              {isImageLoading && (
+                <Box
+                  sx={{
+                    position: "absolute",
+                    inset: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <CircularProgress size={32} />
+                </Box>
+              )}
+              <img
+                src={imagePreviewUrl}
+                alt="プレビュー"
+                onLoad={() => setIsImageLoading(false)}
+                onError={() => setIsImageLoading(false)}
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "100%",
+                  objectFit: "contain",
+                  opacity: isImageLoading ? 0 : 1,
+                }}
+              />
+            </>
           ) : (
             <Box sx={{ textAlign: "center", color: "grey.600" }}>
               <AddPhotoAlternateIcon sx={{ fontSize: 60, mb: 1 }} />
