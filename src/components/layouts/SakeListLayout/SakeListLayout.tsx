@@ -1,6 +1,5 @@
-import type { ReactNode } from "react";
+import { type ReactNode, useEffect } from "react";
 import {
-  Alert,
   Box,
   CircularProgress,
   Container,
@@ -8,6 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import { SakeCard } from "@/components/layouts/SakeListLayout/SakeCard";
+import { useNotification } from "@/hooks/useNotification";
 import type { Sake } from "@/lib/api/generated/models";
 import { useTranslation } from "react-i18next";
 
@@ -33,6 +33,13 @@ export const SakeListLayout = ({
   floatingAction,
 }: SakeListLayoutProps) => {
   const { t } = useTranslation();
+  const { notifyError } = useNotification();
+
+  useEffect(() => {
+    if (error) {
+      notifyError(t("sake.list.error"));
+    }
+  }, [error, notifyError, t]);
 
   if (isLoading) {
     return (
@@ -47,14 +54,6 @@ export const SakeListLayout = ({
         >
           <CircularProgress />
         </Box>
-      </Container>
-    );
-  }
-
-  if (error) {
-    return (
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Alert severity="error">{t("sake.list.error")}</Alert>
       </Container>
     );
   }
