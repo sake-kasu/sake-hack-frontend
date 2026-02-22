@@ -27,6 +27,12 @@ export const theme = createTheme({
     error: {
       main: "#C75C2E",
     },
+    success: {
+      main: "#4A7C59",
+    },
+    warning: {
+      main: "#B8860B",
+    },
   },
   typography: {
     fontFamily: [
