@@ -87,19 +87,20 @@ export const SakeDetailDialog = ({
               overflow: "hidden",
             }}
           >
-            {isImageLoading && (
-              <Box
-                sx={{
-                  position: "absolute",
-                  inset: 0,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <RandomBoozeSpinner size={32} />
-              </Box>
-            )}
+            <Box
+              sx={{
+                position: "absolute",
+                inset: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                opacity: isImageLoading ? 1 : 0,
+                transition: "opacity 0.3s ease",
+                pointerEvents: "none",
+              }}
+            >
+              <RandomBoozeSpinner size={32} />
+            </Box>
             <img
               src={sake.imagePreview}
               alt={sake.name}
@@ -110,6 +111,8 @@ export const SakeDetailDialog = ({
                 maxHeight: "100%",
                 objectFit: "contain",
                 opacity: isImageLoading ? 0 : 1,
+                filter: isImageLoading ? "blur(8px)" : "blur(0)",
+                transition: "opacity 0.4s ease, filter 0.4s ease",
               }}
             />
           </Box>
