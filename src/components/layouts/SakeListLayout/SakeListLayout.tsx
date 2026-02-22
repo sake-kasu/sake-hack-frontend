@@ -1,15 +1,10 @@
+import { Box, Container, Grid, Typography } from "@mui/material";
 import { type ReactNode, useEffect } from "react";
-import {
-  Box,
-  CircularProgress,
-  Container,
-  Grid,
-  Typography,
-} from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { SakeCard } from "@/components/layouts/SakeListLayout/SakeCard";
+import RandomBoozeSpinner from "@/components/ui/RandomBoozeSpinner";
 import { useNotification } from "@/hooks/useNotification";
 import type { Sake } from "@/lib/api/generated/models";
-import { useTranslation } from "react-i18next";
 
 type SakeListLayoutProps = {
   title: string;
@@ -52,7 +47,7 @@ export const SakeListLayout = ({
             minHeight: "50vh",
           }}
         >
-          <CircularProgress />
+          <RandomBoozeSpinner />
         </Box>
       </Container>
     );

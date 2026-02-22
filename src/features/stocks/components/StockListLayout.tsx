@@ -1,15 +1,10 @@
+import { Box, Container, Grid, Typography } from "@mui/material";
 import { type ReactNode, useEffect } from "react";
-import {
-  Box,
-  CircularProgress,
-  Container,
-  Grid,
-  Typography,
-} from "@mui/material";
+import { useTranslation } from "react-i18next";
+import RandomBoozeSpinner from "@/components/ui/RandomBoozeSpinner";
 import { StockCard } from "@/features/stocks/components/StockCard";
 import { useNotification } from "@/hooks/useNotification";
 import type { Sake } from "@/lib/api/generated/models";
-import { useTranslation } from "react-i18next";
 
 type StockListLayoutProps = {
   title: string;
@@ -48,7 +43,7 @@ export const StockListLayout = ({
             minHeight: "50vh",
           }}
         >
-          <CircularProgress />
+          <RandomBoozeSpinner />
         </Box>
       </Container>
     );
