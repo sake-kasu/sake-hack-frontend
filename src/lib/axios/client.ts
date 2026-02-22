@@ -4,6 +4,7 @@ import axios, {
   type AxiosRequestConfig,
   type InternalAxiosRequestConfig,
 } from "axios";
+import i18n from "@/i18n/config";
 import { getOrCreateLikeToken } from "@/features/sake/utils/likeToken";
 import { getEnqueueSnackbar } from "@/lib/notification/notificationRef";
 
@@ -26,16 +27,14 @@ const sleep = (ms: number): Promise<void> =>
 const getApiBaseUrl = (): string => {
   // window.__ENV__ の存在チェック
   if (typeof window === "undefined" || !window.__ENV__) {
-    throw new Error(
-      "ランタイム環境変数が読み込まれていません。env-config.jsがこのスクリプトより前に読み込まれていることを確認してください。",
-    );
+    throw new Error(i18n.t("systemError.runtimeConfigNotLoaded"));
   }
 
   const baseUrl = window.__ENV__.API_BASE_URL;
 
   // 空文字列チェック
   if (!baseUrl || baseUrl.trim() === "") {
-    throw new Error("API_BASE_URLがランタイム環境変数に設定されていません。");
+    throw new Error(i18n.t("systemError.apiBaseUrlNotSet"));
   }
 
   return baseUrl;
@@ -102,12 +101,12 @@ export const createAxiosClient = (): AxiosInstance => {
     if (enqueue) {
       const status = error.response?.status;
       const data = error.response?.data;
-      let message = "通信エラーが発生しました";
+      let message = i18n.t("apiError.communication");
 
       if (status !== undefined && status >= 400 && status < 500) {
-        message = extractErrorMessage(data) ?? "リクエストの処理に失敗しました";
+        message = extractErrorMessage(data) ?? i18n.t("apiError.requestFailed");
       } else if (status !== undefined && status >= 500) {
-        message = extractErrorMessage(data) ?? "サーバーエラーが発生しました";
+        message = extractErrorMessage(data) ?? i18n.t("apiError.serverError");
       }
 
       enqueue(message, {

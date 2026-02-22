@@ -1,3 +1,5 @@
+import i18n from "@/i18n/config";
+
 const HEIC_MIME_TYPES = ["image/heic", "image/heif"];
 const HEIC_EXTENSIONS = [".heic", ".heif"];
 
@@ -65,7 +67,7 @@ export function convertHeicToPng(file: File): Promise<File> {
 
         const ctx = canvas.getContext("2d");
         if (!ctx) {
-          reject(new Error("Canvas 2D コンテキストの取得に失敗しました"));
+          reject(new Error(i18n.t("systemError.canvasContextFailed")));
           return;
         }
 
@@ -73,7 +75,7 @@ export function convertHeicToPng(file: File): Promise<File> {
 
         canvas.toBlob((blob) => {
           if (!blob) {
-            reject(new Error("PNG への変換に失敗しました"));
+            reject(new Error(i18n.t("systemError.pngConversionFailed")));
             return;
           }
 
@@ -90,7 +92,7 @@ export function convertHeicToPng(file: File): Promise<File> {
 
     img.onerror = () => {
       URL.revokeObjectURL(url);
-      reject(new Error("HEIC 画像の読み込みに失敗しました"));
+      reject(new Error(i18n.t("systemError.heicLoadFailed")));
     };
 
     img.src = url;
