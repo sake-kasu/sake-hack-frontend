@@ -14,6 +14,7 @@ type UseStockMutationReturn = {
     id: number,
     request: UpdateSakeRequest,
     imageFile: File | null,
+    existingObjectKey?: string,
   ) => Promise<void>;
   isSaving: boolean;
   error: Error | null;
@@ -78,13 +79,22 @@ export const useStockMutation = (
   );
 
   const updateStock = useCallback(
-    async (id: number, request: UpdateSakeRequest, imageFile: File | null) => {
+    async (
+      id: number,
+      request: UpdateSakeRequest,
+      imageFile: File | null,
+      existingObjectKey?: string,
+    ) => {
       try {
         setIsSaving(true);
         setError(null);
         const api = getStocks();
 
-        await api.updateStock(id, request);
+        // 画像を変更しない場合は既存のobjectKeyを引き継いで画像が消えないようにする
+        await api.updateStock(id, {
+          ...request,
+          objectKey: imageFile !== null ? undefined : existingObjectKey,
+        });
 
         if (imageFile) {
           await uploadImage(id, imageFile);
