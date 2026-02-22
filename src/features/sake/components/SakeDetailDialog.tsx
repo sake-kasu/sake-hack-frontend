@@ -11,6 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import RandomBoozeSpinner from "@/components/ui/RandomBoozeSpinner";
 import { LikeButton } from "@/features/sake/components/LikeButton";
 import {
@@ -32,6 +33,7 @@ export const SakeDetailDialog = ({
   onClose,
   onLikeToggle,
 }: SakeDetailDialogProps) => {
+  const { t } = useTranslation();
   const [isImageLoading, setIsImageLoading] = useState(false);
 
   useEffect(() => {
@@ -153,7 +155,7 @@ export const SakeDetailDialog = ({
             color="text.secondary"
             sx={{ minWidth: 56 }}
           >
-            大分類
+            {t("common.category")}
           </Typography>
           <Chip
             label={getCategoryLabel(sake.category)}

@@ -2,6 +2,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { IconButton, Typography, Box } from "@mui/material";
 import type { MouseEvent } from "react";
+import { useTranslation } from "react-i18next";
 
 type LikeButtonProps = {
   isLiked: boolean;
@@ -16,6 +17,8 @@ export const LikeButton = ({
   onToggle,
   size = "medium",
 }: LikeButtonProps) => {
+  const { t } = useTranslation();
+
   const handleClick = (event: MouseEvent) => {
     event.stopPropagation();
     onToggle();
@@ -23,7 +26,11 @@ export const LikeButton = ({
 
   return (
     <Box sx={{ display: "flex", alignItems: "center" }}>
-      <IconButton onClick={handleClick} size={size} aria-label="いいね">
+      <IconButton
+        onClick={handleClick}
+        size={size}
+        aria-label={t("common.like")}
+      >
         {isLiked ? (
           <FavoriteIcon fontSize={size} sx={{ color: "#C75C2E" }} />
         ) : (
