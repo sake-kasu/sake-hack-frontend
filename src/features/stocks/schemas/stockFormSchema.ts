@@ -1,3 +1,4 @@
+import i18n from "@/i18n/config";
 import { SakeCategory } from "@/lib/api/generated/models";
 import { isValidInput } from "@/utils/validation";
 import * as yup from "yup";
@@ -11,7 +12,7 @@ export const isSakeCategory = (value: string): value is SakeCategory =>
 // isValidInput のカスタムテスト（空文字は許容）
 const validInputTest: yup.TestConfig<string | undefined, yup.AnyObject> = {
   name: "validInput",
-  message: "不正な文字列の入力です",
+  message: () => i18n.t("validation.invalidString"),
   test: (value) => {
     if (value === undefined || value === "") return true;
     return isValidInput(value);
@@ -32,10 +33,10 @@ export const stockFormSchema = yup.object({
   // SakeName.name: string (required, non-empty)
   name: yup
     .string()
-    .required("名前は必須です")
+    .required(() => i18n.t("validation.required.name"))
     .trim()
-    .min(1, "名前は必須です")
-    .max(100, "100文字以内で入力してください")
+    .min(1, () => i18n.t("validation.required.name"))
+    .max(100, () => i18n.t("validation.maxLength.chars100"))
     .test(validInputTest),
 
   // SakeName.phonetic: string (required, 空値は許容)
@@ -43,7 +44,7 @@ export const stockFormSchema = yup.object({
     .string()
     .defined()
     .default("")
-    .max(100, "100文字以内で入力してください")
+    .max(100, () => i18n.t("validation.maxLength.chars100"))
     .test(validInputTest),
 
   // SakeCategory: 初期値 "" を許容し、送信時にバリデーションで弾く
@@ -53,32 +54,32 @@ export const stockFormSchema = yup.object({
     .default("")
     .test(
       "valid-category",
-      "大分類は必須です",
+      () => i18n.t("validation.required.category"),
       (value) => value !== "" && sakeCategoryValues.some((v) => v === value),
     ),
 
   // SakeKind.name: string (required, non-empty)
   kindName: yup
     .string()
-    .required("小分類は必須です")
+    .required(() => i18n.t("validation.required.subcategory"))
     .trim()
-    .min(1, "小分類は必須です")
-    .max(100, "100文字以内で入力してください"),
+    .min(1, () => i18n.t("validation.required.subcategory"))
+    .max(100, () => i18n.t("validation.maxLength.chars100")),
 
   // Brewery.name: string (required, non-empty)
   breweryName: yup
     .string()
-    .required("酒造名は必須です")
+    .required(() => i18n.t("validation.required.breweryName"))
     .trim()
-    .min(1, "酒造名は必須です")
-    .max(100, "100文字以内で入力してください"),
+    .min(1, () => i18n.t("validation.required.breweryName"))
+    .max(100, () => i18n.t("validation.maxLength.chars100")),
 
   // Brewery.originCountry: string (required, non-empty)
   originCountry: yup
     .string()
-    .required("所在国は必須です")
+    .required(() => i18n.t("validation.required.country"))
     .trim()
-    .min(1, "所在国は必須です"),
+    .min(1, () => i18n.t("validation.required.country")),
 
   // Brewery.originRegion?: string | null (optional)
   originRegion: yup.string().defined().default(""),
@@ -91,9 +92,13 @@ export const stockFormSchema = yup.object({
     )
     .defined()
     .nullable()
-    .min(0, "0以上で入力してください")
-    .max(100, "100以下で入力してください")
-    .test("required-abv", "アルコール度数は必須です", (value) => value != null),
+    .min(0, () => i18n.t("validation.range.min0"))
+    .max(100, () => i18n.t("validation.range.max100"))
+    .test(
+      "required-abv",
+      () => i18n.t("validation.required.abv"),
+      (value) => value != null,
+    ),
 
   // purchaseVolume: 初期値 null を許容し、送信時にバリデーションで弾く
   purchaseVolume: yup
@@ -103,11 +108,11 @@ export const stockFormSchema = yup.object({
     )
     .defined()
     .nullable()
-    .min(0, "0以上で入力してください")
-    .max(10000, "10000以下で入力してください")
+    .min(0, () => i18n.t("validation.range.min0"))
+    .max(10000, () => i18n.t("validation.range.max10000"))
     .test(
       "required-purchaseVolume",
-      "購入時容量は必須です",
+      () => i18n.t("validation.required.volume"),
       (value) => value != null,
     ),
 
@@ -122,17 +127,21 @@ export const stockFormSchema = yup.object({
     )
     .defined()
     .nullable()
-    .min(0, "0以上で入力してください")
-    .max(1000000, "1,000,000以下で入力してください")
-    .integer("整数で入力してください")
-    .test("required-price", "購入時価格は必須です", (value) => value != null),
+    .min(0, () => i18n.t("validation.range.min0"))
+    .max(1000000, () => i18n.t("validation.range.max1000000"))
+    .integer(() => i18n.t("validation.integer"))
+    .test(
+      "required-price",
+      () => i18n.t("validation.required.price"),
+      (value) => value != null,
+    ),
 
   // memo: string | null (optional)
   memo: yup
     .string()
     .defined()
     .default("")
-    .max(500, "500文字以内で入力してください"),
+    .max(500, () => i18n.t("validation.maxLength.chars500")),
 });
 
 export type StockFormValues = yup.InferType<typeof stockFormSchema>;
