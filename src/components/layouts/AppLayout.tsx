@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Drawer, Toolbar, useTheme } from "@mui/material";
+import { Box, Drawer, Toolbar, useMediaQuery, useTheme } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import { AppHeader } from "@/components/layouts/AppHeader";
 import { NavigationMenu } from "@/components/layouts/NavigationMenu";
@@ -11,14 +11,21 @@ const DRAWER_WIDTH_MINI = 64;
 
 export const AppLayout = () => {
   const theme = useTheme();
-  const [drawerOpen, setDrawerOpen] = useState(true);
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const [desktopDrawerOpen, setDesktopDrawerOpen] = useState(true);
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
   const handleDrawerToggle = () => {
-    setDrawerOpen(!drawerOpen);
+    if (isDesktop) {
+      setDesktopDrawerOpen((prev) => !prev);
+      return;
+    }
+
+    setMobileDrawerOpen((prev) => !prev);
   };
 
   const handleDrawerClose = () => {
-    setDrawerOpen(false);
+    setMobileDrawerOpen(false);
   };
 
   return (
@@ -29,7 +36,7 @@ export const AppLayout = () => {
         {/* モバイル: temporary drawer */}
         <Drawer
           variant="temporary"
-          open={drawerOpen}
+          open={mobileDrawerOpen}
           onClose={handleDrawerClose}
           ModalProps={{
             keepMounted: true,
@@ -50,11 +57,13 @@ export const AppLayout = () => {
           variant="permanent"
           sx={{
             display: { xs: "none", md: "block" },
-            width: drawerOpen ? DRAWER_WIDTH_DESKTOP : DRAWER_WIDTH_MINI,
+            width: desktopDrawerOpen ? DRAWER_WIDTH_DESKTOP : DRAWER_WIDTH_MINI,
             flexShrink: 0,
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
-              width: drawerOpen ? DRAWER_WIDTH_DESKTOP : DRAWER_WIDTH_MINI,
+              width: desktopDrawerOpen
+                ? DRAWER_WIDTH_DESKTOP
+                : DRAWER_WIDTH_MINI,
               overflowX: "hidden",
               transition: theme.transitions.create("width", {
                 easing: theme.transitions.easing.sharp,
@@ -63,7 +72,7 @@ export const AppLayout = () => {
             },
           }}
         >
-          <NavigationMenu mini={!drawerOpen} />
+          <NavigationMenu mini={!desktopDrawerOpen} />
         </Drawer>
 
         {/* メインコンテンツ */}
@@ -74,7 +83,7 @@ export const AppLayout = () => {
             p: 3,
             width: {
               xs: "100%",
-              md: drawerOpen
+              md: desktopDrawerOpen
                 ? `calc(100% - ${DRAWER_WIDTH_DESKTOP}px)`
                 : `calc(100% - ${DRAWER_WIDTH_MINI}px)`,
             },
