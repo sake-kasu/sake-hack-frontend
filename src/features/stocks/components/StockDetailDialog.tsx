@@ -35,6 +35,11 @@ import {
   stockFormSchema,
 } from "@/features/stocks/schemas/stockFormSchema";
 import { useNotification } from "@/hooks/useNotification";
+import {
+  canBrowserDecodeHeic,
+  convertHeicToPng,
+  isHeicFile,
+} from "@/utils/imageConverter";
 import type {
   Brewery,
   CreateSakeRequest,
@@ -103,7 +108,7 @@ export const StockDetailDialog = ({
   onClose,
   onSaveSuccess,
 }: StockDetailDialogProps) => {
-  const { notifySuccess } = useNotification();
+  const { notifySuccess, notifyWarning } = useNotification();
 
   const {
     detail,
@@ -218,11 +223,16 @@ export const StockDetailDialog = ({
     handleMenuClose();
   };
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
+    // input の値をリセット（同じファイルを再選択できるようにする）
+    event.target.value = "";
+
+    if (!file.type.startsWith("image/") && !isHeicFile(file)) {
       alert("画像ファイルを選択してください");
       return;
     }
@@ -232,11 +242,29 @@ export const StockDetailDialog = ({
       return;
     }
 
+    let targetFile = file;
+
+    if (isHeicFile(file)) {
+      const supported = await canBrowserDecodeHeic();
+      if (!supported) {
+        notifyWarning(
+          "このブラウザは HEIC に対応していません。Safari で開くか、事前に PNG/JPEG に変換してください。",
+        );
+        return;
+      }
+      try {
+        targetFile = await convertHeicToPng(file);
+      } catch {
+        alert("HEIC 画像の変換に失敗しました");
+        return;
+      }
+    }
+
     const reader = new FileReader();
     reader.onload = (e) => {
       const { result } = e.target ?? {};
       if (typeof result === "string") {
-        setImageFile(file);
+        setImageFile(targetFile);
         setImagePreviewUrl(result);
         setIsImageLoading(true);
       }
@@ -244,9 +272,7 @@ export const StockDetailDialog = ({
     reader.onerror = () => {
       alert("画像の読み込みに失敗しました");
     };
-    reader.readAsDataURL(file);
-
-    event.target.value = "";
+    reader.readAsDataURL(targetFile);
   };
 
   // 酒造検索（デバウンス付き）
@@ -474,7 +500,7 @@ export const StockDetailDialog = ({
         <input
           ref={captureInputRef}
           type="file"
-          accept="image/*"
+          accept="image/*,.heic,.heif"
           capture="environment"
           style={{ display: "none" }}
           onChange={handleImageChange}
@@ -484,7 +510,7 @@ export const StockDetailDialog = ({
         <input
           ref={selectInputRef}
           type="file"
-          accept="image/*"
+          accept="image/*,.heic,.heif"
           style={{ display: "none" }}
           onChange={handleImageChange}
         />
