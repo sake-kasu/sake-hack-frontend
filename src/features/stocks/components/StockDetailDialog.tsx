@@ -143,6 +143,9 @@ export const StockDetailDialog = ({
   // 画像（react-hook-form の外で管理）
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+  const [existingObjectKey, setExistingObjectKey] = useState<
+    string | undefined
+  >(undefined);
 
   // 画像選択メニュー用
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -166,6 +169,7 @@ export const StockDetailDialog = ({
       setSelectedDrinkStyles([]);
       setImageFile(null);
       setImagePreviewUrl(null);
+      setExistingObjectKey(undefined);
     } else if (mode === "edit" && stockId !== undefined) {
       fetchDetail(stockId);
     }
@@ -180,6 +184,7 @@ export const StockDetailDialog = ({
       setSelectedDrinkStyles(detail.drinkStyles);
       setImageFile(null);
       setImagePreviewUrl(detail.imageUrl ?? null);
+      setExistingObjectKey(detail.objectKey ?? undefined);
     }
   }, [detail, mode, resetForm]);
 
@@ -291,7 +296,7 @@ export const StockDetailDialog = ({
         await createStock(request, imageFile);
         notifySuccess("在庫を登録しました");
       } else if (stockId !== undefined) {
-        await updateStock(stockId, request, imageFile);
+        await updateStock(stockId, request, imageFile, existingObjectKey);
         notifySuccess("在庫を更新しました");
       }
     } catch {
