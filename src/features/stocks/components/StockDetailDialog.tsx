@@ -170,6 +170,7 @@ export const StockDetailDialog = ({
       setSelectedDrinkStyles([]);
       setImageFile(null);
       setImagePreviewUrl(null);
+      setIsImageLoading(false);
       setExistingObjectKey(undefined);
     } else if (mode === "edit" && stockId !== undefined) {
       fetchDetail(stockId);
@@ -185,17 +186,11 @@ export const StockDetailDialog = ({
       setSelectedDrinkStyles(detail.drinkStyles);
       setImageFile(null);
       setImagePreviewUrl(detail.imageUrl ?? null);
+      setIsImageLoading(!!detail.imageUrl);
       setExistingObjectKey(detail.objectKey ?? undefined);
     }
   }, [detail, mode, resetForm]);
 
-  useEffect(() => {
-    if (imagePreviewUrl) {
-      setIsImageLoading(true);
-    } else {
-      setIsImageLoading(false);
-    }
-  }, [imagePreviewUrl]);
 
   // 画像メニュー
   const handleImageAreaClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -219,6 +214,7 @@ export const StockDetailDialog = ({
   const handleImageDelete = () => {
     setImageFile(null);
     setImagePreviewUrl(null);
+    setIsImageLoading(false);
     handleMenuClose();
   };
 
@@ -242,6 +238,7 @@ export const StockDetailDialog = ({
       if (typeof result === "string") {
         setImageFile(file);
         setImagePreviewUrl(result);
+        setIsImageLoading(true);
       }
     };
     reader.onerror = () => {
@@ -418,19 +415,20 @@ export const StockDetailDialog = ({
         >
           {imagePreviewUrl ? (
             <>
-              {isImageLoading && (
-                <Box
-                  sx={{
-                    position: "absolute",
-                    inset: 0,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <RandomBoozeSpinner size={32} />
-                </Box>
-              )}
+              <Box
+                sx={{
+                  position: "absolute",
+                  inset: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  opacity: isImageLoading ? 1 : 0,
+                  transition: "opacity 0.3s ease",
+                  pointerEvents: "none",
+                }}
+              >
+                <RandomBoozeSpinner size={32} />
+              </Box>
               <img
                 src={imagePreviewUrl}
                 alt="プレビュー"
@@ -441,6 +439,8 @@ export const StockDetailDialog = ({
                   maxHeight: "100%",
                   objectFit: "contain",
                   opacity: isImageLoading ? 0 : 1,
+                  filter: isImageLoading ? "blur(8px)" : "blur(0)",
+                  transition: "opacity 0.4s ease, filter 0.4s ease",
                 }}
               />
             </>
