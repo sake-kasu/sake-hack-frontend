@@ -215,6 +215,7 @@ export const StockDetailDialog = ({
     setImageFile(null);
     setImagePreviewUrl(null);
     setIsImageLoading(false);
+    setExistingObjectKey(undefined);
     handleMenuClose();
   };
 
