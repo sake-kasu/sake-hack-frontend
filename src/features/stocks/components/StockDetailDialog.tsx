@@ -1,5 +1,4 @@
 import {
-  Alert,
   Autocomplete,
   Box,
   Button,
@@ -35,6 +34,7 @@ import type {
   SakeKind,
 } from "@/lib/api/generated/models";
 import { SakeCategory } from "@/lib/api/generated/models";
+import { useNotification } from "@/hooks/useNotification";
 import { useMasterData } from "@/features/stocks/hooks/useMasterData";
 import { useStockDetail } from "@/features/stocks/hooks/useStockDetail";
 import { useStockMutation } from "@/features/stocks/hooks/useStockMutation";
@@ -103,20 +103,17 @@ export const StockDetailDialog = ({
   onClose,
   onSaveSuccess,
 }: StockDetailDialogProps) => {
+  const { notifySuccess } = useNotification();
+
   const {
     detail,
     isLoading: isDetailLoading,
-    error: detailError,
     fetchDetail,
     reset: resetDetail,
   } = useStockDetail();
 
-  const {
-    createStock,
-    updateStock,
-    isSaving,
-    error: saveError,
-  } = useStockMutation(onSaveSuccess);
+  const { createStock, updateStock, isSaving } =
+    useStockMutation(onSaveSuccess);
 
   const {
     kinds,
@@ -292,11 +289,13 @@ export const StockDetailDialog = ({
     try {
       if (mode === "new") {
         await createStock(request, imageFile);
+        notifySuccess("在庫を登録しました");
       } else if (stockId !== undefined) {
         await updateStock(stockId, request, imageFile);
+        notifySuccess("在庫を更新しました");
       }
     } catch {
-      // エラーはuseStockMutationで管理される
+      // エラー通知はAxiosインターセプターで自動表示される
     }
   };
 
@@ -338,12 +337,6 @@ export const StockDetailDialog = ({
       </DialogTitle>
 
       <DialogContent dividers>
-        {(saveError ?? detailError) && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {saveError?.message ?? detailError?.message}
-          </Alert>
-        )}
-
         {/* 名前 */}
         <Box sx={{ mb: 2 }}>
           <Controller
