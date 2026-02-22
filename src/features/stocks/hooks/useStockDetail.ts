@@ -1,3 +1,4 @@
+import i18n from "@/i18n/config";
 import { getStocks } from "@/lib/api/generated/stocks/stocks";
 import type { SakeDetail } from "@/lib/api/generated/models";
 import { useCallback, useState } from "react";
@@ -24,7 +25,9 @@ export const useStockDetail = (): UseStockDetailReturn => {
       setDetail(response);
     } catch (err) {
       setError(
-        err instanceof Error ? err : new Error("詳細取得に失敗しました"),
+        err instanceof Error
+          ? err
+          : new Error(i18n.t("stock.message.detailFetchFailed")),
       );
     } finally {
       setIsLoading(false);

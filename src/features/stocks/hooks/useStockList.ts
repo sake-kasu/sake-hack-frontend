@@ -1,3 +1,4 @@
+import i18n from "@/i18n/config";
 import { getStocks } from "@/lib/api/generated/stocks/stocks";
 import type { Sake } from "@/lib/api/generated/models";
 import { useCallback, useEffect, useState } from "react";
@@ -23,7 +24,9 @@ export const useStockList = (): UseStockListReturn => {
       setStocks(response.data ?? []);
     } catch (err) {
       setError(
-        err instanceof Error ? err : new Error("一覧取得に失敗しました"),
+        err instanceof Error
+          ? err
+          : new Error(i18n.t("stock.message.listFetchFailed")),
       );
     } finally {
       setIsLoading(false);

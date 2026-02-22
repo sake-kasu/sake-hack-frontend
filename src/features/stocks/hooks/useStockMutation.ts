@@ -1,3 +1,4 @@
+import i18n from "@/i18n/config";
 import { getStocks } from "@/lib/api/generated/stocks/stocks";
 import type {
   CreateSakeRequest,
@@ -42,7 +43,7 @@ export const useStockMutation = (
       body: imageFile,
     });
     if (!uploadRes.ok) {
-      throw new Error("画像アップロードに失敗しました");
+      throw new Error(i18n.t("stock.message.uploadFailed"));
     }
 
     // Step 4: objectKeyをDBに保存
@@ -68,7 +69,9 @@ export const useStockMutation = (
         onSuccess();
       } catch (err) {
         const errorObj =
-          err instanceof Error ? err : new Error("保存に失敗しました");
+          err instanceof Error
+            ? err
+            : new Error(i18n.t("stock.message.saveFailed"));
         setError(errorObj);
         throw errorObj;
       } finally {
@@ -103,7 +106,9 @@ export const useStockMutation = (
         onSuccess();
       } catch (err) {
         const errorObj =
-          err instanceof Error ? err : new Error("更新に失敗しました");
+          err instanceof Error
+            ? err
+            : new Error(i18n.t("stock.message.updateFailed"));
         setError(errorObj);
         throw errorObj;
       } finally {
