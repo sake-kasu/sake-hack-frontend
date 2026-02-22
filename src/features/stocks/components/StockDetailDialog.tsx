@@ -1,8 +1,14 @@
+import { yupResolver } from "@hookform/resolvers/yup";
+import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import CloseIcon from "@mui/icons-material/Close";
+import DeleteIcon from "@mui/icons-material/Delete";
+import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
+import SaveIcon from "@mui/icons-material/Save";
 import {
   Autocomplete,
   Box,
   Button,
-  CircularProgress,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -16,16 +22,19 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
-import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import CloseIcon from "@mui/icons-material/Close";
-import DeleteIcon from "@mui/icons-material/Delete";
-import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
-import SaveIcon from "@mui/icons-material/Save";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
+import RandomBoozeSpinner from "@/components/ui/RandomBoozeSpinner";
 import { getCategoryLabel } from "@/features/stocks/constants";
+import { useMasterData } from "@/features/stocks/hooks/useMasterData";
+import { useStockDetail } from "@/features/stocks/hooks/useStockDetail";
+import { useStockMutation } from "@/features/stocks/hooks/useStockMutation";
+import {
+  isSakeCategory,
+  type StockFormValues,
+  stockFormSchema,
+} from "@/features/stocks/schemas/stockFormSchema";
+import { useNotification } from "@/hooks/useNotification";
 import type {
   Brewery,
   CreateSakeRequest,
@@ -34,15 +43,6 @@ import type {
   SakeKind,
 } from "@/lib/api/generated/models";
 import { SakeCategory } from "@/lib/api/generated/models";
-import { useNotification } from "@/hooks/useNotification";
-import { useMasterData } from "@/features/stocks/hooks/useMasterData";
-import { useStockDetail } from "@/features/stocks/hooks/useStockDetail";
-import { useStockMutation } from "@/features/stocks/hooks/useStockMutation";
-import {
-  isSakeCategory,
-  stockFormSchema,
-  type StockFormValues,
-} from "@/features/stocks/schemas/stockFormSchema";
 
 // 残容量の選択肢（0から100の間の25の倍数）
 const REMAINING_VOLUME_OPTIONS = [0, 25, 50, 75, 100];
@@ -319,7 +319,7 @@ export const StockDetailDialog = ({
       <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
         <DialogContent>
           <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-            <CircularProgress />
+            <RandomBoozeSpinner />
           </Box>
         </DialogContent>
       </Dialog>
@@ -428,7 +428,7 @@ export const StockDetailDialog = ({
                     justifyContent: "center",
                   }}
                 >
-                  <CircularProgress size={32} />
+                  <RandomBoozeSpinner size={32} />
                 </Box>
               )}
               <img

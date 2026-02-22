@@ -3,7 +3,6 @@ import LocalBarIcon from "@mui/icons-material/LocalBar";
 import {
   Box,
   Chip,
-  CircularProgress,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -12,12 +11,13 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import type { Sake } from "@/lib/api/generated/models";
+import RandomBoozeSpinner from "@/components/ui/RandomBoozeSpinner";
 import { LikeButton } from "@/features/sake/components/LikeButton";
 import {
-  getCategoryLabel,
   getCategoryColor,
+  getCategoryLabel,
 } from "@/features/stocks/constants";
+import type { Sake } from "@/lib/api/generated/models";
 
 type SakeDetailDialogProps = {
   sake: Sake | null;
@@ -97,7 +97,7 @@ export const SakeDetailDialog = ({
                   justifyContent: "center",
                 }}
               >
-                <CircularProgress size={32} />
+                <RandomBoozeSpinner size={32} />
               </Box>
             )}
             <img
