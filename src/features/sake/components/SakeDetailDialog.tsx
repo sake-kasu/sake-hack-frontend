@@ -3,6 +3,7 @@ import LocalBarIcon from "@mui/icons-material/LocalBar";
 import {
   Box,
   Chip,
+  CircularProgress,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -10,6 +11,7 @@ import {
   IconButton,
   Typography,
 } from "@mui/material";
+import { useEffect, useState } from "react";
 import type { Sake } from "@/lib/api/generated/models";
 import { LikeButton } from "@/features/sake/components/LikeButton";
 import {
@@ -30,6 +32,16 @@ export const SakeDetailDialog = ({
   onClose,
   onLikeToggle,
 }: SakeDetailDialogProps) => {
+  const [isImageLoading, setIsImageLoading] = useState(false);
+
+  useEffect(() => {
+    if (sake?.imagePreview) {
+      setIsImageLoading(true);
+    } else {
+      setIsImageLoading(false);
+    }
+  }, [sake?.imagePreview]);
+
   if (!sake) {
     return null;
   }
@@ -63,6 +75,7 @@ export const SakeDetailDialog = ({
         {sake.imagePreview ? (
           <Box
             sx={{
+              position: "relative",
               width: "100%",
               height: 260,
               mb: 2,
@@ -74,13 +87,29 @@ export const SakeDetailDialog = ({
               overflow: "hidden",
             }}
           >
+            {isImageLoading && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  inset: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <CircularProgress size={32} />
+              </Box>
+            )}
             <img
               src={sake.imagePreview}
               alt={sake.name}
+              onLoad={() => setIsImageLoading(false)}
+              onError={() => setIsImageLoading(false)}
               style={{
                 maxWidth: "100%",
                 maxHeight: "100%",
                 objectFit: "contain",
+                opacity: isImageLoading ? 0 : 1,
               }}
             />
           </Box>
