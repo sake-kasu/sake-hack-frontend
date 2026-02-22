@@ -39,8 +39,16 @@ export type SakeDetail = {
   likeCount: number;
   /** リクエストユーザーがいいね済みかどうか */
   isLiked: boolean;
-  /** 表示用の画像URL */
-  imageUrl?: string;
+  /**
+   * S3/RustFSのオブジェクトキー
+   * @nullable
+   */
+  objectKey?: string | null;
+  /**
+   * 表示用の画像URL(プリサインドURL)
+   * @nullable
+   */
+  imageUrl?: string | null;
   /** 作成日時 */
   createdAt: string;
   /** 更新日時 */
