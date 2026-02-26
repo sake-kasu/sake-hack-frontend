@@ -1,72 +1,25 @@
-// ドメインモデル
-export type SakeName = {
-  name: string;
-  phonetic: string;
-};
+import type { CategoryEnum } from "@/config";
 
-export type SakeCategory = {
-  id: number;
-  name: string;
-};
-
-export type SakeKind = {
-  id: number;
-  name: string;
-};
-
-export type Brewery = {
-  id: number;
-  name: string;
-  originCountry: string;
-  originRegion: string | null;
-  location: {
-    latitude: number;
-    longitude: number;
-  } | null;
-};
-
-export type DrinkStyle = {
-  id: number;
-  name: string;
-  description: string | null;
-};
-
-export type SakeType = {
-  id: number;
-  name: string;
+export type SakeImage = {
+  id: string;
+  imageKey: string;
+  createdAt: Date;
 };
 
 // APIレスポンスに対応するドメインモデル
 export type Sake = {
-  id: number;
+  id: string; // uuid
   name: string;
-  type: SakeType;
-  brewery: Brewery;
-  abv: number;
-  tasteNotes: string;
+  phonetic: string;
+  image: SakeImage | null;
+  category: CategoryEnum;
+  description: string | null; // UI上の「小分類」に対応
+  alcoholPercentage: number | null;
+  volumeMax: number | null; // 最大容量（ml）
+  volumeRemain: number | null; // 残り容量（%）
+  region: string | null;
+  price: number | null;
   memo: string | null;
-  drinkStyles: DrinkStyle[];
-  imageUrl: string | null;
-  likeCount: number;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
-// 酒詳細画面で必要な全ての情報
-export type SakeDetail = {
-  id: number; // 一意に判別するID
-  sakeName: SakeName; // その酒の名前
-  category: SakeCategory; // 大分類
-  kind: string[]; // 小分類
-  originRegion: string; // 産地（一旦場所だけ）
-  abv: number; // 度数
-  PurchaseVolume: number; // 購入時容量s
-  RemainingVolume: number; // 残容量 25%刻みなら0~4でも良い気がする
-  memo: string | null; // 自由記述
-  drinkStyles: string; // おすすめの飲み方
-  price: number; // 購入時価格
-  imageUrl: string | null; // 将来的な画像表示用
-  likeCount: number; // いいね数（TODO: API実装後に取得）
   createdAt: Date;
   updatedAt: Date;
 };
@@ -74,8 +27,6 @@ export type SakeDetail = {
 export type SakeListParams = {
   offset?: number;
   limit?: number;
-  typeId?: number;
-  breweryId?: number;
 };
 
 export type SakeListMeta = {

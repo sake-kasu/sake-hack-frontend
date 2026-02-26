@@ -10,6 +10,7 @@ import {
 import { Favorite, FavoriteBorder } from "@mui/icons-material";
 import type { Sake } from "@/types/sake";
 import { useSakeLike } from "@/features/sake/hooks/useSakeLike";
+import { CATEGORY_LABEL } from "@/config";
 
 type SakeCardProps = {
   sake: Sake;
@@ -17,12 +18,9 @@ type SakeCardProps = {
 };
 
 export const SakeCard = ({ sake, onClick }: SakeCardProps) => {
-  const { isLiked, likeCount, toggleLike, isProcessing } = useSakeLike(
-    sake.id,
-    sake.likeCount,
-  );
+  const { isLiked, likeCount, toggleLike, isProcessing } = useSakeLike(sake.id);
 
-  const handleLikeClick = (e: React.MouseEvent) => {
+  const handleLikeClick = (e: { stopPropagation: () => void }) => {
     e.stopPropagation(); // カード全体のクリックイベントを防ぐ
     toggleLike();
   };
@@ -44,34 +42,23 @@ export const SakeCard = ({ sake, onClick }: SakeCardProps) => {
             justifyContent: "center",
           }}
         >
-          {sake.imageUrl ? (
-            <img
-              src={sake.imageUrl}
-              alt={sake.name}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-              }}
-            />
-          ) : (
-            <Typography variant="body2" color="text.secondary">
-              画像未設定
-            </Typography>
-          )}
+          {/* TODO: API更新後、sake.image.imageKeyからURLを構築して表示する */}
+          <Typography variant="body2" color="text.secondary">
+            画像未設定
+          </Typography>
         </CardMedia>
         <CardContent sx={{ flexGrow: 1, width: "100%" }}>
           <Typography gutterBottom variant="h6" component="div" noWrap>
             {sake.name}
           </Typography>
           <Typography variant="body2" color="text.secondary" noWrap>
-            {sake.type.name}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" noWrap>
-            {sake.brewery.name}
+            {CATEGORY_LABEL[sake.category]}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            ABV: {sake.abv}%
+            ABV:{" "}
+            {sake.alcoholPercentage !== null
+              ? `${sake.alcoholPercentage}%`
+              : "-"}
           </Typography>
 
           {/* いいねボタン */}

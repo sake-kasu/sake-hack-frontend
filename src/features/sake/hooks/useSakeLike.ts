@@ -6,15 +6,15 @@ const DEBOUNCE_DELAY = 1000; // 連打対策: 300ms
 /**
  * LocalStorageからいいね状態を取得
  */
-const getLikesFromStorage = (): Set<number> => {
+const getLikesFromStorage = (): Set<string> => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return new Set();
     const parsed = JSON.parse(stored);
-    // 型安全チェック: 配列であり、すべてnumberであることを確認
+    // 型安全チェック: 配列であり、すべてstringであることを確認
     if (
       Array.isArray(parsed) &&
-      parsed.every((item) => typeof item === "number" && Number.isFinite(item))
+      parsed.every((item) => typeof item === "string")
     ) {
       return new Set(parsed);
     } else {
@@ -29,14 +29,11 @@ const getLikesFromStorage = (): Set<number> => {
 /**
  * LocalStorageにいいね状態を保存
  */
-const saveLikesToStorage = (likes: Set<number>): void => {
+const saveLikesToStorage = (likes: Set<string>): void => {
   try {
     const arr = [...likes];
-    // 型安全チェック: 配列であり、すべてnumberであることを確認
-    if (
-      Array.isArray(arr) &&
-      arr.every((item) => typeof item === "number" && Number.isFinite(item))
-    ) {
+    // 型安全チェック: 配列であり、すべてstringであることを確認
+    if (Array.isArray(arr) && arr.every((item) => typeof item === "string")) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
     }
   } catch {
@@ -46,13 +43,12 @@ const saveLikesToStorage = (likes: Set<number>): void => {
 
 /**
  * いいね機能のカスタムフック
- * @param sakeId - 酒のID
- * @param initialLikeCount - 初期いいね数（APIから取得した値）
+ * @param sakeId - 酒のID (uuid)
  */
 
-export const useSakeLike = (sakeId: number, initialLikeCount: number) => {
+export const useSakeLike = (sakeId: string) => {
   const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(initialLikeCount);
+  const [likeCount, setLikeCount] = useState(0); // TODO: API実装後にサーバーから取得
   const [isProcessing, setIsProcessing] = useState(false);
   const isProcessingRef = useRef(false);
 
@@ -100,7 +96,7 @@ export const useSakeLike = (sakeId: number, initialLikeCount: number) => {
     //     console.error("Failed to sync like status with API:", error);
     //     // エラー時はローカル状態をロールバック
     //     setIsLiked(wasLiked);
-    //     setLikeCount(initialLikeCount);
+    //     setLikeCount((prev) => (wasLiked ? prev + 1 : prev - 1));
     //     const rollbackLikes = getLikesFromStorage();
     //     if (wasLiked) {
     //       rollbackLikes.add(sakeId);
@@ -134,7 +130,7 @@ export const useSakeLike = (sakeId: number, initialLikeCount: number) => {
 //  * 酒にいいねを追加
 //  * POST /api/sakes/{sakeId}/likes
 //  */
-// export const addSakeLike = async (sakeId: number): Promise<void> => {
+// export const addSakeLike = async (sakeId: string): Promise<void> => {
 //   await customInstance({
 //     url: `/api/sakes/${sakeId}/likes`,
 //     method: "POST",
@@ -145,7 +141,7 @@ export const useSakeLike = (sakeId: number, initialLikeCount: number) => {
 //  * 酒のいいねを削除
 //  * DELETE /api/sakes/{sakeId}/likes
 //  */
-// export const removeSakeLike = async (sakeId: number): Promise<void> => {
+// export const removeSakeLike = async (sakeId: string): Promise<void> => {
 //   await customInstance({
 //     url: `/api/sakes/${sakeId}/likes`,
 //     method: "DELETE",
