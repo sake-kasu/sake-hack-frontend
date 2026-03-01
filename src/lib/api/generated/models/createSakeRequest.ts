@@ -15,8 +15,8 @@ import type { SakeName } from "./sakeName";
 
 export type CreateSakeRequest = {
   category: SakeCategory;
-  kind: SakeKind;
-  brewery: Brewery;
+  kind?: SakeKind;
+  brewery?: Brewery;
   name: SakeName;
   /** アルコール度数(%) */
   abv: number;
@@ -30,7 +30,7 @@ export type CreateSakeRequest = {
    */
   memo: string | null;
   /** おすすめの飲み方 */
-  drinkStyles: DrinkStyle[];
+  drinkStyles?: DrinkStyle[];
   /** 購入時価格 */
   price: number;
   /** S3/RustFSのオブジェクトキー */
