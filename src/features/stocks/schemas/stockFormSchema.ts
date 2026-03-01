@@ -22,12 +22,11 @@ const validInputTest: yup.TestConfig<string | undefined, yup.AnyObject> = {
 /**
  * CreateSakeRequest / UpdateSakeRequest の型定義に基づくバリデーションスキーマ
  *
- * 必須フィールド (型に `?` なし):
- *   category, kind.name, brewery.name, brewery.originCountry,
- *   name.name, name.phonetic, abv, purchaseVolume, remainingVolume, price
+ * 必須フィールド:
+ *   category, name.name, name.phonetic, abv, purchaseVolume, remainingVolume, price
  *
  * 任意フィールド:
- *   brewery.originRegion, memo, objectKey
+ *   kindName, originRegion, memo, objectKey
  */
 export const stockFormSchema = yup.object({
   // SakeName.name: string (required, non-empty)
@@ -58,28 +57,13 @@ export const stockFormSchema = yup.object({
       (value) => value !== "" && sakeCategoryValues.some((v) => v === value),
     ),
 
-  // SakeKind.name: string (required, non-empty)
+  // SakeKind.name: string (optional)
   kindName: yup
     .string()
-    .required(() => i18n.t("validation.required.subcategory"))
+    .defined()
+    .default("")
     .trim()
-    .min(1, () => i18n.t("validation.required.subcategory"))
     .max(100, () => i18n.t("validation.maxLength.chars100")),
-
-  // Brewery.name: string (required, non-empty)
-  breweryName: yup
-    .string()
-    .required(() => i18n.t("validation.required.breweryName"))
-    .trim()
-    .min(1, () => i18n.t("validation.required.breweryName"))
-    .max(100, () => i18n.t("validation.maxLength.chars100")),
-
-  // Brewery.originCountry: string (required, non-empty)
-  originCountry: yup
-    .string()
-    .required(() => i18n.t("validation.required.country"))
-    .trim()
-    .min(1, () => i18n.t("validation.required.country")),
 
   // Brewery.originRegion?: string | null (optional)
   originRegion: yup.string().defined().default(""),
