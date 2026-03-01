@@ -42,9 +42,7 @@ import {
   isHeicFile,
 } from "@/utils/imageConverter";
 import type {
-  Brewery,
   CreateSakeRequest,
-  DrinkStyle,
   SakeDetail,
   SakeKind,
 } from "@/lib/api/generated/models";
@@ -53,15 +51,11 @@ import { SakeCategory } from "@/lib/api/generated/models";
 // 残容量の選択肢（0から100の間の25の倍数）
 const REMAINING_VOLUME_OPTIONS = [0, 25, 50, 75, 100];
 
-const BREWERY_SEARCH_DEBOUNCE_MS = 300;
-
 const DEFAULT_VALUES: StockFormValues = {
   name: "",
   phonetic: "",
   category: "",
   kindName: "",
-  breweryName: "",
-  originCountry: "",
   originRegion: "",
   abv: null,
   purchaseVolume: null,
@@ -83,8 +77,6 @@ const detailToFormValues = (detail: SakeDetail): StockFormValues => {
     phonetic: detail.name.phonetic,
     category: detail.category,
     kindName: detail.kind.name,
-    breweryName: detail.brewery.name,
-    originCountry: detail.brewery.originCountry,
     originRegion: detail.brewery.originRegion ?? "",
     abv: detail.abv,
     purchaseVolume: detail.purchaseVolume,
@@ -122,18 +114,12 @@ export const StockDetailDialog = ({
   const { createStock, updateStock, isSaving } =
     useStockMutation(onSaveSuccess);
 
-  const {
-    kinds,
-    breweries,
-    drinkStyles: drinkStyleOptions,
-    searchBreweries,
-  } = useMasterData();
+  const { kinds } = useMasterData();
 
   const {
     control,
     handleSubmit,
     reset: resetForm,
-    setValue,
   } = useForm<StockFormValues>({
     resolver: yupResolver(stockFormSchema),
     defaultValues: DEFAULT_VALUES,
@@ -142,10 +128,6 @@ export const StockDetailDialog = ({
 
   // マスタデータ選択状態（react-hook-form の外で管理）
   const [selectedKind, setSelectedKind] = useState<SakeKind | null>(null);
-  const [selectedBrewery, setSelectedBrewery] = useState<Brewery | null>(null);
-  const [selectedDrinkStyles, setSelectedDrinkStyles] = useState<DrinkStyle[]>(
-    [],
-  );
 
   // 画像（react-hook-form の外で管理）
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -161,11 +143,6 @@ export const StockDetailDialog = ({
   const captureInputRef = useRef<HTMLInputElement>(null);
   const selectInputRef = useRef<HTMLInputElement>(null);
 
-  // 酒造検索デバウンス用
-  const brewerySearchTimerRef = useRef<
-    ReturnType<typeof setTimeout> | undefined
-  >(undefined);
-
   // ダイアログが開いた時の初期化
   useEffect(() => {
     if (!open) return;
@@ -173,8 +150,6 @@ export const StockDetailDialog = ({
       resetDetail();
       resetForm(DEFAULT_VALUES);
       setSelectedKind(null);
-      setSelectedBrewery(null);
-      setSelectedDrinkStyles([]);
       setImageFile(null);
       setImagePreviewUrl(null);
       setIsImageLoading(false);
@@ -189,8 +164,6 @@ export const StockDetailDialog = ({
     if (detail && mode === "edit") {
       resetForm(detailToFormValues(detail));
       setSelectedKind(detail.kind);
-      setSelectedBrewery(detail.brewery);
-      setSelectedDrinkStyles(detail.drinkStyles);
       setImageFile(null);
       setImagePreviewUrl(detail.imageUrl ?? null);
       setIsImageLoading(!!detail.imageUrl);
@@ -275,14 +248,6 @@ export const StockDetailDialog = ({
     reader.readAsDataURL(targetFile);
   };
 
-  // 酒造検索（デバウンス付き）
-  const handleBreweryInputChange = (inputValue: string) => {
-    clearTimeout(brewerySearchTimerRef.current);
-    brewerySearchTimerRef.current = setTimeout(() => {
-      searchBreweries(inputValue);
-    }, BREWERY_SEARCH_DEBOUNCE_MS);
-  };
-
   const buildRequest = (data: StockFormValues): CreateSakeRequest => {
     const { category, abv, purchaseVolume, price } = data;
 
@@ -295,18 +260,8 @@ export const StockDetailDialog = ({
       throw new Error("Validation failed: required fields are missing");
     }
 
-    return {
+    const request: CreateSakeRequest = {
       category,
-      kind: {
-        id: selectedKind?.id ?? detail?.kind.id ?? 0,
-        name: data.kindName,
-      },
-      brewery: {
-        id: selectedBrewery?.id ?? detail?.brewery.id ?? 0,
-        name: data.breweryName,
-        originCountry: data.originCountry,
-        originRegion: data.originRegion || null,
-      },
       name: {
         name: data.name,
         phonetic: data.phonetic,
@@ -315,9 +270,17 @@ export const StockDetailDialog = ({
       purchaseVolume,
       remainingVolume: (purchaseVolume * Number(data.remainingVolume)) / 100,
       memo: data.memo || null,
-      drinkStyles: selectedDrinkStyles,
       price,
     };
+
+    if (data.kindName) {
+      request.kind = {
+        id: selectedKind?.id ?? detail?.kind.id ?? 0,
+        name: data.kindName,
+      };
+    }
+
+    return request;
   };
 
   const onSubmit = async (data: StockFormValues) => {
@@ -568,7 +531,6 @@ export const StockDetailDialog = ({
                   <TextField
                     {...params}
                     label={t("stock.detail.subcategory")}
-                    required
                     error={!!fieldState.error}
                     helperText={
                       fieldState.error?.message ??
@@ -576,67 +538,6 @@ export const StockDetailDialog = ({
                     }
                   />
                 )}
-              />
-            )}
-          />
-        </Box>
-
-        {/* 酒造名 */}
-        <Box sx={{ mb: 2 }}>
-          <Controller
-            name="breweryName"
-            control={control}
-            render={({ field, fieldState }) => (
-              <Autocomplete
-                freeSolo
-                options={breweries}
-                getOptionLabel={(option) =>
-                  typeof option === "string" ? option : option.name
-                }
-                filterOptions={(x) => x}
-                inputValue={field.value ?? ""}
-                onInputChange={(_event, newValue) => {
-                  field.onChange(newValue);
-                  handleBreweryInputChange(newValue);
-                }}
-                onChange={(_event, newValue) => {
-                  if (newValue !== null && typeof newValue !== "string") {
-                    setSelectedBrewery(newValue);
-                    field.onChange(newValue.name);
-                    setValue("originCountry", newValue.originCountry);
-                    setValue("originRegion", newValue.originRegion ?? "");
-                  } else {
-                    setSelectedBrewery(null);
-                  }
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label={t("stock.detail.breweryName")}
-                    required
-                    error={!!fieldState.error}
-                    helperText={fieldState.error?.message}
-                  />
-                )}
-              />
-            )}
-          />
-        </Box>
-
-        {/* 所在国 */}
-        <Box sx={{ mb: 2 }}>
-          <Controller
-            name="originCountry"
-            control={control}
-            render={({ field, fieldState }) => (
-              <TextField
-                {...field}
-                label={t("stock.detail.country")}
-                fullWidth
-                required
-                error={!!fieldState.error}
-                placeholder={t("stock.detail.countryPlaceholder")}
-                helperText={fieldState.error?.message}
               />
             )}
           />
@@ -751,23 +652,6 @@ export const StockDetailDialog = ({
                 inputProps={{ min: 0, max: 1000000 }}
                 helperText={fieldState.error?.message}
               />
-            )}
-          />
-        </Box>
-
-        {/* おすすめの飲み方 */}
-        <Box sx={{ mb: 2 }}>
-          <Autocomplete
-            multiple
-            options={drinkStyleOptions}
-            getOptionLabel={(option) => option.name}
-            isOptionEqualToValue={(option, value) => option.id === value.id}
-            value={selectedDrinkStyles}
-            onChange={(_event, newValue) => {
-              setSelectedDrinkStyles(newValue);
-            }}
-            renderInput={(params) => (
-              <TextField {...params} label={t("stock.detail.drinkStyle")} />
             )}
           />
         </Box>
