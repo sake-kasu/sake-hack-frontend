@@ -9,6 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import type { Sake } from "@/types/sake";
+import { CATEGORY_LABEL } from "@/config";
 
 type SakeDetailDialogProps = {
   sake: Sake | null;
@@ -43,59 +44,55 @@ export const SakeDetailDialog = ({
         </Box>
       </DialogTitle>
       <DialogContent dividers>
-        {sake.imageUrl && (
-          <Box
-            sx={{
-              width: "100%",
-              height: 300,
-              mb: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "grey.100",
-            }}
-          >
-            <img
-              src={sake.imageUrl}
-              alt={sake.name}
-              style={{
-                maxWidth: "100%",
-                maxHeight: "100%",
-                objectFit: "contain",
-              }}
-            />
-          </Box>
-        )}
+        {/* TODO: API更新後、sake.image.imageKeyからURLを構築して表示する */}
 
         <Box sx={{ mb: 2 }}>
           <Typography variant="subtitle2" color="text.secondary">
-            種類
+            ふりがな
           </Typography>
-          <Typography variant="body1">{sake.type.name}</Typography>
+          <Typography variant="body1">{sake.phonetic || "-"}</Typography>
         </Box>
 
         <Box sx={{ mb: 2 }}>
           <Typography variant="subtitle2" color="text.secondary">
-            酒造
+            大分類
           </Typography>
           <Typography variant="body1">
-            {sake.brewery.name}
-            {sake.brewery.originRegion ? ` (${sake.brewery.originRegion})` : ""}
+            {CATEGORY_LABEL[sake.category]}
           </Typography>
+        </Box>
+
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="subtitle2" color="text.secondary">
+            小分類
+          </Typography>
+          <Typography variant="body1">{sake.description ?? "-"}</Typography>
+        </Box>
+
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="subtitle2" color="text.secondary">
+            産地
+          </Typography>
+          <Typography variant="body1">{sake.region ?? "-"}</Typography>
         </Box>
 
         <Box sx={{ mb: 2 }}>
           <Typography variant="subtitle2" color="text.secondary">
             アルコール度数
           </Typography>
-          <Typography variant="body1">{sake.abv}%</Typography>
+          <Typography variant="body1">
+            {sake.alcoholPercentage !== null
+              ? `${sake.alcoholPercentage}%`
+              : "-"}
+          </Typography>
         </Box>
+
         {sake.memo && (
           <>
             <Divider sx={{ my: 2 }} />
             <Box>
               <Typography variant="subtitle2" color="text.secondary">
-                メモ
+                自由記述
               </Typography>
               <Typography variant="body1">{sake.memo}</Typography>
             </Box>

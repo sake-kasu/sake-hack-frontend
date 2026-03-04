@@ -1,52 +1,20 @@
-import type {
-  Brewery as ApiBrewery,
-  DrinkStyle as ApiDrinkStyle,
-  Sake as ApiSake,
-  SakeType as ApiSakeType,
-} from "@/lib/api/generated";
-import type { Brewery, DrinkStyle, Sake, SakeType } from "@/types/sake";
-
-export const mapSakeTypeFromApi = (apiSakeType: ApiSakeType): SakeType => ({
-  id: apiSakeType.id,
-  name: apiSakeType.name,
-});
-
-export const mapBreweryFromApi = (apiBrewery: ApiBrewery): Brewery => ({
-  id: apiBrewery.id,
-  name: apiBrewery.name,
-  originCountry: apiBrewery.origin_country,
-  originRegion: apiBrewery.origin_region ?? null,
-  location:
-    apiBrewery.latitude !== null &&
-    apiBrewery.latitude !== undefined &&
-    apiBrewery.longitude !== null &&
-    apiBrewery.longitude !== undefined
-      ? {
-          latitude: apiBrewery.latitude,
-          longitude: apiBrewery.longitude,
-        }
-      : null,
-});
-
-export const mapDrinkStyleFromApi = (
-  apiDrinkStyle: ApiDrinkStyle,
-): DrinkStyle => ({
-  id: apiDrinkStyle.id,
-  name: apiDrinkStyle.name,
-  description: apiDrinkStyle.description ?? null,
-});
+import { CATEGORY_ENUM } from "@/config";
+import type { Sake as ApiSake } from "@/lib/api/generated";
+import type { Sake } from "@/types/sake";
 
 export const mapSakeFromApi = (apiSake: ApiSake): Sake => ({
-  id: apiSake.id,
+  id: String(apiSake.id), // TODO: API更新後はuuidに変更
   name: apiSake.name,
-  type: mapSakeTypeFromApi(apiSake.type),
-  brewery: mapBreweryFromApi(apiSake.brewery),
-  abv: apiSake.abv,
-  tasteNotes: apiSake.taste_notes,
+  phonetic: "", // TODO: API未実装
+  image: null, // TODO: API未実装
+  category: CATEGORY_ENUM.OTHER, // TODO: API更新後に正しいcategoryフィールドを使用
+  description: apiSake.taste_notes, // 暫定: 現APIのtaste_notesをdescription(小分類)に充当
+  alcoholPercentage: apiSake.abv,
+  volumeMax: null, // TODO: API未実装
+  volumeRemain: null, // TODO: API未実装
+  region: apiSake.brewery.origin_region ?? null, // 暫定: 現APIのbrewery.origin_regionを使用
+  price: null, // TODO: API未実装
   memo: apiSake.memo ?? null,
-  drinkStyles: apiSake.drink_styles.map(mapDrinkStyleFromApi),
-  imageUrl: null, // 将来的に実装
-  likeCount: 0, // TODO: API実装後、apiSake.like_count を使用
   createdAt: new Date(apiSake.created_at),
   updatedAt: new Date(apiSake.updated_at),
 });
