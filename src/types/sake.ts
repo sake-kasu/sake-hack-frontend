@@ -6,7 +6,7 @@ export type SakeImage = {
   createdAt: Date;
 };
 
-// APIレスポンスに対応するドメインモデル
+// ドメインモデル
 export type Sake = {
   id: string; // uuid
   name: string;
