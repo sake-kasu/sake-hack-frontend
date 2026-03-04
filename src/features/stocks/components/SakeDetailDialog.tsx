@@ -43,7 +43,7 @@ export type SakeDetailForm = {
 };
 
 type SakeDetailDialogProps = {
-  sakeId: number | undefined;
+  sakeId: string | undefined;
   open: boolean;
   mode: "new" | "edit" | null;
   onClose: () => void;
@@ -177,7 +177,13 @@ export const SakeDetailDialog = ({
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>
-        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           <Box component="span" sx={{ fontWeight: "bold" }}>
             {mode === "edit" ? "酒の詳細を編集" : "新しい酒を追加"}
           </Box>
@@ -205,7 +211,11 @@ export const SakeDetailDialog = ({
             required
             error={!isValidInput(forms.name)}
             inputProps={{ maxLength: 100 }}
-            helperText={isValidInput(forms.name) ? `${forms.name.length}/100` : "不正な文字列の入力です"}
+            helperText={
+              isValidInput(forms.name)
+                ? `${forms.name.length}/100`
+                : "不正な文字列の入力です"
+            }
           />
         </Box>
 
@@ -219,7 +229,11 @@ export const SakeDetailDialog = ({
             }
             fullWidth
             inputProps={{ maxLength: 100 }}
-            helperText={isValidInput(forms.phonetic) ? `${forms.phonetic.length}/100` : "不正な文字列の入力です"}
+            helperText={
+              isValidInput(forms.phonetic)
+                ? `${forms.phonetic.length}/100`
+                : "不正な文字列の入力です"
+            }
             error={!isValidInput(forms.phonetic)}
           />
         </Box>
