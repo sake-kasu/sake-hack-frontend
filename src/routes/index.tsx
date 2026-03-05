@@ -1,6 +1,7 @@
 import { createBrowserRouter, type RouteObject } from "react-router-dom";
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { Home } from "@/pages/Home";
+import { MatterPlayground } from "@/pages/MatterPlayground";
 import { NotFound } from "@/pages/NotFound";
 import { SakeList } from "@/pages/SakeList";
 import { SakeStocks } from "@/pages/SakeStocks";
@@ -21,6 +22,10 @@ const routes: RouteObject[] = [
       {
         path: "stock",
         element: <SakeStocks />,
+      },
+      {
+        path: "matter",
+        element: <MatterPlayground />,
       },
     ],
   },
