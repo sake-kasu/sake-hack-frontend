@@ -112,6 +112,7 @@
       "price": "Price is required"
     },
     "maxLength": {
+      "chars50": "Must be 50 characters or less",
       "chars100": "Must be 100 characters or less",
       "chars500": "Must be 500 characters or less"
     },

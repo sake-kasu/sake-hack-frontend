@@ -251,12 +251,7 @@ export const StockDetailDialog = ({
   const buildRequest = (data: StockFormValues): CreateSakeRequest => {
     const { category, abv, purchaseVolume, price } = data;
 
-    if (
-      !isSakeCategory(category) ||
-      abv === null ||
-      purchaseVolume === null ||
-      price === null
-    ) {
+    if (!isSakeCategory(category)) {
       throw new Error("Validation failed: required fields are missing");
     }
 
@@ -266,11 +261,12 @@ export const StockDetailDialog = ({
         name: data.name,
         phonetic: data.phonetic,
       },
-      abv,
-      purchaseVolume,
-      remainingVolume: (purchaseVolume * Number(data.remainingVolume)) / 100,
+      abv: abv ?? 0,
+      purchaseVolume: purchaseVolume ?? 0,
+      remainingVolume:
+        ((purchaseVolume ?? 0) * Number(data.remainingVolume)) / 100,
       memo: data.memo || null,
-      price,
+      price: price ?? 0,
     };
 
     if (data.kindName) {
@@ -351,10 +347,10 @@ export const StockDetailDialog = ({
                 fullWidth
                 required
                 error={!!fieldState.error}
-                inputProps={{ maxLength: 100 }}
+                inputProps={{ maxLength: 50 }}
                 helperText={
                   fieldState.error?.message ??
-                  `${(field.value ?? "").length}/100`
+                  `${(field.value ?? "").length}/50`
                 }
               />
             )}
@@ -486,7 +482,7 @@ export const StockDetailDialog = ({
             name="category"
             control={control}
             render={({ field, fieldState }) => (
-              <FormControl fullWidth required error={!!fieldState.error}>
+              <FormControl fullWidth required error={!!fieldState.error} size="small">
                 <InputLabel>{t("stock.detail.category")}</InputLabel>
                 <Select {...field} label={t("stock.detail.category")}>
                   {Object.values(SakeCategory).map((value) => (
@@ -575,7 +571,6 @@ export const StockDetailDialog = ({
                 label={t("stock.detail.abv")}
                 type="number"
                 fullWidth
-                required
                 error={!!fieldState.error}
                 inputProps={{ min: 0, max: 100 }}
                 helperText={fieldState.error?.message}
@@ -601,7 +596,6 @@ export const StockDetailDialog = ({
                 label={t("stock.detail.volume")}
                 type="number"
                 fullWidth
-                required
                 error={!!fieldState.error}
                 inputProps={{ min: 0, max: 10000 }}
                 helperText={fieldState.error?.message}
@@ -616,7 +610,7 @@ export const StockDetailDialog = ({
             name="remainingVolume"
             control={control}
             render={({ field }) => (
-              <FormControl fullWidth>
+              <FormControl fullWidth size="small">
                 <InputLabel>{t("stock.detail.remainingVolume")}</InputLabel>
                 <Select {...field} label={t("stock.detail.remainingVolume")}>
                   {REMAINING_VOLUME_OPTIONS.map((volume) => (
@@ -647,7 +641,6 @@ export const StockDetailDialog = ({
                 label={t("stock.detail.price")}
                 type="number"
                 fullWidth
-                required
                 error={!!fieldState.error}
                 inputProps={{ min: 0, max: 1000000 }}
                 helperText={fieldState.error?.message}

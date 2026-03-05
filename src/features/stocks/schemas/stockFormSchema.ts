@@ -23,10 +23,10 @@ const validInputTest: yup.TestConfig<string | undefined, yup.AnyObject> = {
  * CreateSakeRequest / UpdateSakeRequest の型定義に基づくバリデーションスキーマ
  *
  * 必須フィールド:
- *   category, name.name, name.phonetic, abv, purchaseVolume, remainingVolume, price
+ *   category, name.name, name.phonetic, remainingVolume
  *
  * 任意フィールド:
- *   kindName, originRegion, memo, objectKey
+ *   kindName, originRegion, memo, objectKey, abv, purchaseVolume, price
  */
 export const stockFormSchema = yup.object({
   // SakeName.name: string (required, non-empty)
@@ -35,7 +35,7 @@ export const stockFormSchema = yup.object({
     .required(() => i18n.t("validation.required.name"))
     .trim()
     .min(1, () => i18n.t("validation.required.name"))
-    .max(100, () => i18n.t("validation.maxLength.chars100"))
+    .max(50, () => i18n.t("validation.maxLength.chars50"))
     .test(validInputTest),
 
   // SakeName.phonetic: string (required, 空値は許容)
@@ -68,7 +68,7 @@ export const stockFormSchema = yup.object({
   // Brewery.originRegion?: string | null (optional)
   originRegion: yup.string().defined().default(""),
 
-  // abv: 初期値 null を許容し、送信時にバリデーションで弾く
+  // abv: number | null (optional)
   abv: yup
     .number()
     .transform((value: unknown, original: unknown) =>
@@ -77,14 +77,9 @@ export const stockFormSchema = yup.object({
     .defined()
     .nullable()
     .min(0, () => i18n.t("validation.range.min0"))
-    .max(100, () => i18n.t("validation.range.max100"))
-    .test(
-      "required-abv",
-      () => i18n.t("validation.required.abv"),
-      (value) => value != null,
-    ),
+    .max(100, () => i18n.t("validation.range.max100")),
 
-  // purchaseVolume: 初期値 null を許容し、送信時にバリデーションで弾く
+  // purchaseVolume: number | null (optional)
   purchaseVolume: yup
     .number()
     .transform((value: unknown, original: unknown) =>
@@ -93,17 +88,12 @@ export const stockFormSchema = yup.object({
     .defined()
     .nullable()
     .min(0, () => i18n.t("validation.range.min0"))
-    .max(10000, () => i18n.t("validation.range.max10000"))
-    .test(
-      "required-purchaseVolume",
-      () => i18n.t("validation.required.volume"),
-      (value) => value != null,
-    ),
+    .max(10000, () => i18n.t("validation.range.max10000")),
 
   // remainingVolume: 25%刻み (UI上はパーセント文字列)
   remainingVolume: yup.string().required().default("100"),
 
-  // price: 初期値 null を許容し、送信時にバリデーションで弾く
+  // price: number | null (optional)
   price: yup
     .number()
     .transform((value: unknown, original: unknown) =>
@@ -113,12 +103,7 @@ export const stockFormSchema = yup.object({
     .nullable()
     .min(0, () => i18n.t("validation.range.min0"))
     .max(1000000, () => i18n.t("validation.range.max1000000"))
-    .integer(() => i18n.t("validation.integer"))
-    .test(
-      "required-price",
-      () => i18n.t("validation.required.price"),
-      (value) => value != null,
-    ),
+    .integer(() => i18n.t("validation.integer")),
 
   // memo: string | null (optional)
   memo: yup
