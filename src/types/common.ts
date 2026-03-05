@@ -30,7 +30,6 @@ export type SortParams = {
 };
 
 export type NavigationMenuItem = {
-  label: string;
   labelKey: string;
   icon: React.ReactNode;
   path: string;

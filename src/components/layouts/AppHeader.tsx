@@ -1,7 +1,7 @@
 import { AppBar, Toolbar, IconButton, Typography, Box } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import LanguageIcon from "@mui/icons-material/Language";
 import { useTranslation } from "react-i18next";
+import { useHeaderActions } from "@/providers/HeaderActionsProvider";
 
 type AppHeaderProps = {
   onMenuClick: () => void;
@@ -9,12 +9,8 @@ type AppHeaderProps = {
 };
 
 export const AppHeader = ({ onMenuClick, showMenuButton }: AppHeaderProps) => {
-  const { t, i18n } = useTranslation();
-
-  const handleLanguageToggle = () => {
-    const newLang = i18n.language === "ja" ? "en" : "ja";
-    i18n.changeLanguage(newLang);
-  };
+  const { t } = useTranslation();
+  const headerActions = useHeaderActions();
 
   return (
     <AppBar
@@ -26,27 +22,28 @@ export const AppHeader = ({ onMenuClick, showMenuButton }: AppHeaderProps) => {
       <Toolbar>
         {showMenuButton && (
           <IconButton
-            color="inherit"
             aria-label={t("layout.openDrawer")}
             edge="start"
             onClick={onMenuClick}
-            sx={{ mr: 2 }}
+            sx={{ mr: 2, color: "text.primary" }}
           >
             <MenuIcon />
           </IconButton>
         )}
-        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+        <Typography
+          variant="h6"
+          noWrap
+          component="div"
+          sx={{
+            flexGrow: 1,
+            fontWeight: 700,
+            letterSpacing: "0.04em",
+            color: "text.primary",
+          }}
+        >
           {t("layout.appTitle")}
         </Typography>
-        <Box>
-          <IconButton
-            color="inherit"
-            aria-label={t("layout.changeLanguage")}
-            onClick={handleLanguageToggle}
-          >
-            <LanguageIcon />
-          </IconButton>
-        </Box>
+        {headerActions && <Box>{headerActions}</Box>}
       </Toolbar>
     </AppBar>
   );

@@ -1,15 +1,10 @@
-import type { ReactNode } from "react";
-import {
-  Alert,
-  Box,
-  CircularProgress,
-  Container,
-  Grid,
-  Typography,
-} from "@mui/material";
-import { SakeCard } from "@/components/layouts/SakeListLayout/SakeCard";
-import type { Sake } from "@/types/sake";
+import { Box, Container, Grid, Typography } from "@mui/material";
+import { type ReactNode, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { SakeCard } from "@/components/layouts/SakeListLayout/SakeCard";
+import RandomBoozeSpinner from "@/components/ui/RandomBoozeSpinner";
+import { useNotification } from "@/hooks/useNotification";
+import type { Sake } from "@/lib/api/generated/models";
 
 type SakeListLayoutProps = {
   title: string;
@@ -17,6 +12,7 @@ type SakeListLayoutProps = {
   isLoading: boolean;
   error: Error | null;
   onCardClick: (sake: Sake) => void;
+  onLikeToggle: (sakeId: number) => void;
   headerAction?: ReactNode;
   floatingAction?: ReactNode;
 };
@@ -27,10 +23,18 @@ export const SakeListLayout = ({
   isLoading,
   error,
   onCardClick,
+  onLikeToggle,
   headerAction,
   floatingAction,
 }: SakeListLayoutProps) => {
   const { t } = useTranslation();
+  const { notifyError } = useNotification();
+
+  useEffect(() => {
+    if (error) {
+      notifyError(t("sake.list.error"));
+    }
+  }, [error, notifyError, t]);
 
   if (isLoading) {
     return (
@@ -43,16 +47,8 @@ export const SakeListLayout = ({
             minHeight: "50vh",
           }}
         >
-          <CircularProgress />
+          <RandomBoozeSpinner />
         </Box>
-      </Container>
-    );
-  }
-
-  if (error) {
-    return (
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Alert severity="error">{t("sake.list.error")}</Alert>
       </Container>
     );
   }
@@ -75,8 +71,12 @@ export const SakeListLayout = ({
 
       <Grid container spacing={3}>
         {sakes.map((sake) => (
-          <Grid key={sake.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
-            <SakeCard sake={sake} onClick={() => onCardClick(sake)} />
+          <Grid key={sake.id} size={{ xs: 6, sm: 6, md: 4, lg: 3 }}>
+            <SakeCard
+              sake={sake}
+              onClick={() => onCardClick(sake)}
+              onLikeToggle={() => onLikeToggle(sake.id)}
+            />
           </Grid>
         ))}
       </Grid>

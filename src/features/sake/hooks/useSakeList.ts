@@ -1,12 +1,12 @@
-import { getSakeHackBackendAPI } from "@/lib/api/generated";
-import { mapSakeListFromApi } from "@/mappers/sakeMapper";
-import type { Sake } from "@/types/sake";
-import { useEffect, useState } from "react";
+import { getSakes } from "@/lib/api/generated/sakes/sakes";
+import type { Sake } from "@/lib/api/generated/models";
+import { useCallback, useEffect, useState } from "react";
 
 type UseSakeListReturn = {
   sakes: Sake[];
   isLoading: boolean;
   error: Error | null;
+  updateSakeLike: (sakeId: number, isLiked: boolean, likeCount: number) => void;
 };
 
 export const useSakeList = (): UseSakeListReturn => {
@@ -18,12 +18,11 @@ export const useSakeList = (): UseSakeListReturn => {
     const fetchSakes = async () => {
       try {
         setIsLoading(true);
-        const api = getSakeHackBackendAPI();
+        const api = getSakes();
         const response = await api.listSakes({ limit: 100 });
 
         if (response.data) {
-          const domainSakes = mapSakeListFromApi(response.data);
-          setSakes(domainSakes);
+          setSakes(response.data);
         }
       } catch (err) {
         setError(err instanceof Error ? err : new Error("Unknown error"));
@@ -35,5 +34,16 @@ export const useSakeList = (): UseSakeListReturn => {
     fetchSakes();
   }, []);
 
-  return { sakes, isLoading, error };
+  const updateSakeLike = useCallback(
+    (sakeId: number, isLiked: boolean, likeCount: number) => {
+      setSakes((prev) =>
+        prev.map((sake) =>
+          sake.id === sakeId ? { ...sake, isLiked, likeCount } : sake,
+        ),
+      );
+    },
+    [],
+  );
+
+  return { sakes, isLoading, error, updateSakeLike };
 };

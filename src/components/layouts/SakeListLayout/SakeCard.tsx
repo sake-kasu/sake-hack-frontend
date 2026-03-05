@@ -1,32 +1,52 @@
 import {
+  Box,
   Card,
   CardActionArea,
   CardContent,
   CardMedia,
+  Chip,
   Typography,
-  Box,
-  IconButton,
 } from "@mui/material";
-import { Favorite, FavoriteBorder } from "@mui/icons-material";
-import type { Sake } from "@/types/sake";
-import { useSakeLike } from "@/features/sake/hooks/useSakeLike";
-import { CATEGORY_LABEL } from "@/config";
+import LocalBarIcon from "@mui/icons-material/LocalBar";
+import { useState } from "react";
+import type { Sake } from "@/lib/api/generated/models";
+import {
+  getCategoryLabel,
+  getCategoryColor,
+} from "@/features/stocks/constants";
+import { LikeButton } from "@/features/sake/components/LikeButton";
+import RandomBoozeSpinner from "@/components/ui/RandomBoozeSpinner";
 
 type SakeCardProps = {
   sake: Sake;
   onClick: () => void;
+  onLikeToggle: () => void;
 };
 
-export const SakeCard = ({ sake, onClick }: SakeCardProps) => {
-  const { isLiked, likeCount, toggleLike, isProcessing } = useSakeLike(sake.id);
-
-  const handleLikeClick = (e: { stopPropagation: () => void }) => {
-    e.stopPropagation(); // カード全体のクリックイベントを防ぐ
-    toggleLike();
-  };
+export const SakeCard = ({ sake, onClick, onLikeToggle }: SakeCardProps) => {
+  const categoryColor = getCategoryColor(sake.category);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
-    <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+    <Card
+      sx={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        transition: "transform 0.2s ease, box-shadow 0.2s ease",
+        "&:hover": {
+          transform: "translateY(-2px)",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.06)",
+        },
+      }}
+    >
+      <Box
+        sx={{
+          height: 3,
+          backgroundColor: categoryColor,
+          borderRadius: "12px 12px 0 0",
+        }}
+      />
       <CardActionArea
         onClick={onClick}
         sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
@@ -35,63 +55,93 @@ export const SakeCard = ({ sake, onClick }: SakeCardProps) => {
           component="div"
           sx={{
             width: "100%",
-            height: 200,
-            backgroundColor: "grey.200",
+            height: 160,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            ...(sake.imagePreview
+              ? {}
+              : {
+                  background: `linear-gradient(135deg, ${categoryColor}18 0%, ${categoryColor}08 100%)`,
+                }),
           }}
         >
-          {/* TODO: API更新後、sake.image.imageKeyからURLを構築して表示する */}
-          <Typography variant="body2" color="text.secondary">
-            画像未設定
-          </Typography>
+          {sake.imagePreview ? (
+            <>
+              <div
+                style={{
+                  position: "absolute",
+                  opacity: imageLoaded ? 0 : 1,
+                  transition: "opacity 0.3s ease",
+                  pointerEvents: "none",
+                }}
+              >
+                <RandomBoozeSpinner size={40} />
+              </div>
+              <img
+                src={sake.imagePreview}
+                alt={sake.name}
+                onLoad={() => setImageLoaded(true)}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  opacity: imageLoaded ? 1 : 0,
+                  filter: imageLoaded ? "blur(0)" : "blur(8px)",
+                  transition: "opacity 0.4s ease, filter 0.4s ease",
+                }}
+              />
+            </>
+          ) : (
+            <LocalBarIcon
+              sx={{
+                fontSize: 40,
+                color: categoryColor,
+                opacity: 0.3,
+              }}
+            />
+          )}
         </CardMedia>
         <CardContent sx={{ flexGrow: 1, width: "100%" }}>
-          <Typography gutterBottom variant="h6" component="div" noWrap>
+          <Typography
+            gutterBottom
+            variant="h6"
+            component="div"
+            noWrap
+            sx={{ lineHeight: 1.4 }}
+          >
             {sake.name}
           </Typography>
-          <Typography variant="body2" color="text.secondary" noWrap>
-            {CATEGORY_LABEL[sake.category]}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            ABV:{" "}
-            {sake.alcoholPercentage !== null
-              ? `${sake.alcoholPercentage}%`
-              : "-"}
-          </Typography>
-
-          {/* いいねボタン */}
-          <Box
+          <Chip
+            label={getCategoryLabel(sake.category)}
+            size="small"
             sx={{
-              display: "flex",
-              alignItems: "center",
-              mt: 1,
+              height: 22,
+              fontSize: "0.6875rem",
+              backgroundColor: `${categoryColor}12`,
+              color: categoryColor,
+              border: `1px solid ${categoryColor}30`,
+              fontWeight: 500,
             }}
-          >
-            <IconButton
-              size="small"
-              onClick={handleLikeClick}
-              disabled={isProcessing}
-              sx={{
-                padding: 0.5,
-                "&:hover": {
-                  backgroundColor: "transparent",
-                },
-              }}
-            >
-              {isLiked ? (
-                <Favorite sx={{ color: "error.main", fontSize: 20 }} />
-              ) : (
-                <FavoriteBorder sx={{ color: "grey.500", fontSize: 20 }} />
-              )}
-            </IconButton>
-            <Typography variant="body2" color="text.secondary" sx={{ ml: 0.5 }}>
-              {likeCount}
-            </Typography>
-          </Box>
+          />
         </CardContent>
       </CardActionArea>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          px: 1,
+          pb: 1,
+        }}
+      >
+        <LikeButton
+          isLiked={sake.isLiked}
+          likeCount={sake.likeCount}
+          onToggle={onLikeToggle}
+          size="small"
+        />
+      </Box>
     </Card>
   );
 };

@@ -1,4 +1,4 @@
-.PHONY: help dev build preview clean test test-watch cover lint format deps api-generate
+.PHONY: help dev build preview clean test test-watch cover typecheck lint format deps api-generate
 
 # 変数定義
 APP_NAME=sake-hack-frontend
@@ -45,7 +45,11 @@ cover: ## カバレッジ測定付きでテストを実行
 	@bun vitest run --coverage
 	@echo "✅ カバレッジレポートを生成しました"
 
-lint: ## リンターを実行
+typecheck: ## TypeScript型チェックを実行
+	@echo "🔎 TypeScript型チェックを実行しています..."
+	@bun tsc -b --noEmit
+
+lint: typecheck ## リンターを実行
 	@echo "🔍 リンターを実行しています..."
 	@bun biome lint $(SRC_DIR)
 
@@ -65,5 +69,6 @@ deps-clean: ## 依存関係をクリーンインストール
 
 # API開発
 api-generate: ## OpenAPI仕様からAPIクライアントを自動生成
-	@echo "🤖 OpenAPI仕様からAPIクライアントを生成しています..."
-	@bun orval --config orval.config.ts
+	@./scripts/generate-api.sh $(BRANCH)
+	@bun biome format --write $(SRC_DIR)/lib/api
+	@echo "finished."

@@ -4,6 +4,7 @@ import { RouterProvider } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { theme } from "@/lib/mui/theme";
+import { NotificationProvider } from "@/providers/NotificationProvider";
 import { router } from "@/routes";
 import "@/i18n/config";
 import "@/styles/global.css";
@@ -18,7 +19,9 @@ createRoot(rootElement).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <RouterProvider router={router} />
+      <NotificationProvider>
+        <RouterProvider router={router} />
+      </NotificationProvider>
     </ThemeProvider>
   </StrictMode>,
 );

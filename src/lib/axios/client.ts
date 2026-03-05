@@ -4,6 +4,9 @@ import axios, {
   type AxiosRequestConfig,
   type InternalAxiosRequestConfig,
 } from "axios";
+import i18n from "@/i18n/config";
+import { getOrCreateLikeToken } from "@/features/sake/utils/likeToken";
+import { getEnqueueSnackbar } from "@/lib/notification/notificationRef";
 
 const MAX_RETRIES = 3;
 const INITIAL_RETRY_DELAY = 1000; // 1秒
@@ -24,16 +27,14 @@ const sleep = (ms: number): Promise<void> =>
 const getApiBaseUrl = (): string => {
   // window.__ENV__ の存在チェック
   if (typeof window === "undefined" || !window.__ENV__) {
-    throw new Error(
-      "ランタイム環境変数が読み込まれていません。env-config.jsがこのスクリプトより前に読み込まれていることを確認してください。",
-    );
+    throw new Error(i18n.t("systemError.runtimeConfigNotLoaded"));
   }
 
   const baseUrl = window.__ENV__.API_BASE_URL;
 
   // 空文字列チェック
   if (!baseUrl || baseUrl.trim() === "") {
-    throw new Error("API_BASE_URLがランタイム環境変数に設定されていません。");
+    throw new Error(i18n.t("systemError.apiBaseUrlNotSet"));
   }
 
   return baseUrl;
@@ -51,7 +52,10 @@ export const createAxiosClient = (): AxiosInstance => {
   // リクエストインターセプター
   client.interceptors.request.use(
     (config) => {
-      // 認証トークンなどを追加
+      // /sakes パスへのリクエストに X-Like-Token を付与
+      if (config.url?.includes("/sakes")) {
+        config.headers.set("X-Like-Token", getOrCreateLikeToken());
+      }
       return config;
     },
     (error) => Promise.reject(error),
@@ -91,7 +95,45 @@ export const createAxiosClient = (): AxiosInstance => {
     },
   );
 
+  // グローバルエラー通知インターセプター（リトライ後に最終的にrejectされたエラーに対して発火）
+  client.interceptors.response.use(undefined, (error: AxiosError) => {
+    const enqueue = getEnqueueSnackbar();
+    if (enqueue) {
+      const status = error.response?.status;
+      const data = error.response?.data;
+      let message = i18n.t("apiError.communication");
+
+      if (status !== undefined && status >= 400 && status < 500) {
+        message = extractErrorMessage(data) ?? i18n.t("apiError.requestFailed");
+      } else if (status !== undefined && status >= 500) {
+        message = extractErrorMessage(data) ?? i18n.t("apiError.serverError");
+      }
+
+      enqueue(message, {
+        variant: "error",
+        autoHideDuration: null,
+        anchorOrigin: { vertical: "top", horizontal: "center" },
+      });
+    }
+    return Promise.reject(error);
+  });
+
   return client;
+};
+
+const hasMessageProperty = (data: unknown): data is { message: unknown } => {
+  return data !== null && typeof data === "object" && "message" in data;
+};
+
+const extractErrorMessage = (data: unknown): string | undefined => {
+  if (
+    hasMessageProperty(data) &&
+    typeof data.message === "string" &&
+    data.message.length > 0
+  ) {
+    return data.message;
+  }
+  return undefined;
 };
 
 export const apiClient = createAxiosClient();
